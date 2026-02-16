@@ -12,7 +12,8 @@ info: {
   name: 'async',
   type: 'os',
   version: '1.0.0',
-  source: 'github.com/tendergalaxy/dotOS/blob/main/src/modules/async.js'
+  source: 'github.com/tendergalaxy/dotOS/blob/main/src/modules/async.js',
+  requirements: []
 },
 callbacks: {
 
