@@ -27,7 +27,7 @@
       			return t(...args)
       		} catch(e){
       			dotError.e = e
-      			dotError.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') - 3
+      			dotError.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') 
       		}
         },
       	log(){
