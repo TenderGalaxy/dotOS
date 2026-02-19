@@ -1,6 +1,7 @@
-/* osTS */
-/* The DotOS Task Scheduler */
+
 {
+  /* osTS */
+/* The DotOS Task Scheduler */
   info: {
     name: 'TS',
     type: 'worldcode',
