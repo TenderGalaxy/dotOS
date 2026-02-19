@@ -13,7 +13,7 @@
       		dotError.point = ''
       		dotError.src = code.split(/[\n;]+/)
       		try{
-      			return Function(code)(args)
+      			return new Function(code)(args)
       		} catch(e){
       			dotError.e = e
       			dotError.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') - 3
@@ -21,9 +21,10 @@
       	},
         tryFunction(code, ...args){
           dotError.point = ''
-      		dotError.src = code.split(/[\n;]+/)
+      		dotError.src = code.toString().split(/[\n;]+/)
       		try{
-      			return (code)(args)
+      		    let t = code
+      			return t(args)
       		} catch(e){
       			dotError.e = e
       			dotError.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') - 3
@@ -36,10 +37,9 @@
       		}
       		let m = dotError.e.stack.split('\n')
       		m = Array.from(m, (x) => x.slice(4)).slice(0, m.length - 4)
-      		api.broadcastMessage([{str: `Line ${dotError.point}: ${dotError.e.message}\n`, style: {color: 'orange'}},
-      		{str: `>| ${dotError.src[dotError.point]}\n`, style: {color: 'lightblue'}},
-      		{str: m.join('\n'), style: {color: 'orange'}}
-      ])
+      		console.log(`Line ${dotError.point}: ${dotError.e.message}\n`)
+      		console.log(`>| ${dotError.src[dotError.point]}\n`)
+      		console.log(m.join('\n'))
       	},
       	hasError(){
       		return dotError.point !== ''
