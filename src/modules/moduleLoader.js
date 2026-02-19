@@ -53,7 +53,7 @@
             globalThis[name] = function(...args){
               t = undefined
               for(let i of dotOS.callbacks[name]){
-                t = i(...args)
+                t = dotError.tryFunction(i, ...args)
               }
               return t
             }
