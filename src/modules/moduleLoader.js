@@ -1,5 +1,5 @@
+//callbacks is predefined in wc, is fine to use
 {
-  // todo: replace all instances of module with dotModule, as module is a reserved keyword in many environments
   info: {
     name: 'moduleLoader',
     type: 'worldcode',
@@ -12,13 +12,11 @@
       globalThis.dotOS ??= {}
       dotOS.module ??= {}
       dotOS.callbacks ??= {}
-      let callbacks = 'tick onClose onPlayerJoin onPlayerLeave onPlayerJump onRespawnRequest playerCommand onPlayerChat onPlayerChangeBlock onPlayerDropItem onPlayerPickedUpItem onPlayerSelectInventorySlot onBlockStand onPlayerAttemptCraft onPlayerCraft onPlayerAttemptOpenChest onPlayerOpenedChest onPlayerMoveItemOutOfInventory onPlayerMoveInvenItem onPlayerMoveItemIntoIdxs onPlayerSwapInvenSlots onPlayerMoveInvenItemWithAmt onPlayerAttemptAltAction onPlayerAltAction onPlayerClick onClientOptionUpdated onMobSettingUpdated onInventoryUpdated onChestUpdated onWorldChangeBlock onCreateBloxdMeshEntity onEntityCollision onPlayerAttemptSpawnMob onWorldAttemptSpawnMob onPlayerSpawnMob onWorldSpawnMob onWorldAttemptDespawnMob onMobDespawned onPlayerAttack onPlayerDamagingOtherPlayer onPlayerDamagingMob onMobDamagingPlayer onMobDamagingOtherMob onAttemptKillPlayer onPlayerKilledOtherPlayer onMobKilledPlayer onPlayerKilledMob onMobKilledOtherMob onPlayerPotionEffect onPlayerDamagingMeshEntity onPlayerBreakMeshEntity onPlayerUsedThrowable onPlayerThrowableHitTerrain onTouchscreenActionButton onTaskClaimed onChunkLoaded onPlayerRequestChunk onItemDropCreated onPlayerStartChargingItem onPlayerFinishChargingItem onPlayerFinishQTE doPeriodicSave'
-      callbacks = callbacks.split(' ')
       for(let i of callbacks){
         dotOS.callbacks[i] = []
       }
       globalThis.dotModule = {
-        callbacks: ["tick","onClose","onPlayerJoin","onPlayerLeave","onPlayerJump","onRespawnRequest","playerCommand","onPlayerChat","onPlayerChangeBlock","onPlayerDropItem","onPlayerPickedUpItem","onPlayerSelectInventorySlot","onBlockStand","onPlayerAttemptCraft","onPlayerCraft","onPlayerAttemptOpenChest","onPlayerOpenedChest","onPlayerMoveItemOutOfInventory","onPlayerMoveInvenItem","onPlayerMoveItemIntoIdxs","onPlayerSwapInvenSlots","onPlayerMoveInvenItemWithAmt","onPlayerAttemptAltAction","onPlayerAltAction","onPlayerClick","onClientOptionUpdated","onMobSettingUpdated","onInventoryUpdated","onChestUpdated","onWorldChangeBlock","onCreateBloxdMeshEntity","onEntityCollision","onPlayerAttemptSpawnMob","onWorldAttemptSpawnMob","onPlayerSpawnMob","onWorldSpawnMob","onWorldAttemptDespawnMob","onMobDespawned","onPlayerAttack","onPlayerDamagingOtherPlayer","onPlayerDamagingMob","onMobDamagingPlayer","onMobDamagingOtherMob","onAttemptKillPlayer","onPlayerKilledOtherPlayer","onMobKilledPlayer","onPlayerKilledMob","onMobKilledOtherMob","onPlayerPotionEffect","onPlayerDamagingMeshEntity","onPlayerBreakMeshEntity","onPlayerUsedThrowable","onPlayerThrowableHitTerrain","onTouchscreenActionButton","onTaskClaimed","onChunkLoaded","onPlayerRequestChunk","onItemDropCreated","onPlayerStartChargingItem","onPlayerFinishChargingItem","onPlayerFinishQTE","doPeriodicSave"],
+        callbacks: callbacks,
         refreshOnLoad: true,
         load(name){
           let t = FS.get(`dotOS/modules/${name}.js`)
