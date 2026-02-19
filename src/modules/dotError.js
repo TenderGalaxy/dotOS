@@ -23,11 +23,10 @@
           dotError.point = ''
       		dotError.src = code.toString().split(/[\n;]+/)
       		try{
-      		  let t = code
-      			return t(...args)
+      			return (code)(...args)
       		} catch(e){
       			dotError.e = e
-      			dotError.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') 
+      			dotError.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') + 1
       		}
         },
       	log(){
