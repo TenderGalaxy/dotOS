@@ -47,15 +47,15 @@ onLoad(){
     }
   }
   globalThis.threadLibs = {
-    sleep(ms){
+    *sleep(ms){
       yield* threadLibs.sleep_internal(TS.tick + ms)
     },
-    sleep_internal(del){
+    *sleep_internal(del){
       if(TS.tick < del){
         yield
       }
     },
-    waitUntil(condition){
+    *waitUntil(condition){
       if(!condition){
         yield
       }
