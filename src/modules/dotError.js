@@ -13,7 +13,7 @@
       		dotError.point = ''
       		dotError.src = code.split(/[\n;]+/)
       		try{
-      			Function(code)(args)
+      			return Function(code)(args)
       		} catch(e){
       			dotError.e = e
       			dotError.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') - 3
@@ -23,7 +23,7 @@
           dotError.point = ''
       		dotError.src = code.split(/[\n;]+/)
       		try{
-      			code(args)
+      			return code(args)
       		} catch(e){
       			dotError.e = e
       			dotError.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') - 3
