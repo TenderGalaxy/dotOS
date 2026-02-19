@@ -41,8 +41,7 @@
         refreshModules(){
           dotModule.resetAllCallbacks()
           for(let [i, j] of Object.entries(dotOS.module)){
-            j = j.callbacks
-            for(let [k, l] of Object.entries(j)){
+            for(let [k, l] of Object.entries(j.callbacks)){
               if(l.name == 'onLoad'){
                 l()
               } else {
