@@ -1,4 +1,5 @@
-/*
+{
+  /*
 Sample code:
 
 a = new Thread(function(){
@@ -7,7 +8,6 @@ a = new Thread(function(){
   api.log('Bye')
 })
 */
-{
 info: {
   name: 'async',
   type: 'os',
