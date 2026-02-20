@@ -60,9 +60,11 @@ t = {
       } else {
         TS.stack = [...TS.work[TS.tick], ...TS.stack]
       }
+      let f;
       while(stack.length > 0){
         eval()
-        dotError.tryFunction(TS.stack.shift())
+        f = TS.stack.shift()
+        dotError.tryFunction(f)
         if(dotError.hasError()){
           dotError.log()
         }
