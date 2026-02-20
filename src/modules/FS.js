@@ -37,7 +37,7 @@
             chunks.push(descs.slice(i, i + 36))
           }
           let len = chunks.length
-          api.setStandardChestItemSlot([file, FS.disk, 0], JSON.stringify({
+          api.setStandardChestItemSlot([file, FS.disk, 0], 0, 'Net', 1, undefined, JSON.stringify({
             name: contents.name,
             extension: contents.extension,
             length: len
