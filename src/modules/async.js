@@ -1,4 +1,4 @@
-otp = {
+let otp = {
   /*
 Sample code:
 
