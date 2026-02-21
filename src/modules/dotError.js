@@ -1,4 +1,4 @@
-otp = {
+let otp = {
   info: {
     name: 'dotError',
     type: 'worldcode',
