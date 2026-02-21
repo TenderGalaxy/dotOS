@@ -11,28 +11,28 @@ class dotErr {
     }
   }
   tryFunction(code, ...args){
-    dotError.point = ''
-    dotError.src = code.toString().split(/[\n;]+/)
+    this.point = ''
+    this.src = code.toString().split(/[\n;]+/)
     try{
     	return (code)(...args)
     } catch(e){
-    	dotError.e = e
-    	dotError.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') + 1
+    	this.e = e
+    	this.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') + 1
     }
   }
   log(){
-  	if(dotError.point === ''){
+  	if(this.point === ''){
   		api.broadcastMessage('No Errors Found!', {color: 'red'})
   		return
   	}
-  	let m = dotError.e.stack.split('\n')
+  	let m = this.e.stack.split('\n')
   	m = Array.from(m, (x) => x.slice(4)).slice(0, m.length - 4)
-  	api.broadcastMessage([{str: `Line ${dotError.point}: ${dotError.e.message}\n`, style: {color: 'orange'}},
-  	{str: `>| ${dotError.src[dotError.point]}\n`, style: {color: 'lightblue'}},
+  	api.broadcastMessage([{str: `Line ${this.point}: ${this.e.message}\n`, style: {color: 'orange'}},
+  	{str: `>| ${this.src[this.point]}\n`, style: {color: 'lightblue'}},
   	{str: m.join('\n'), style: {color: 'orange'}}])
   },
   hasError(){
-  	return dotError.point !== ''
+  	return this.point !== ''
   }
 }
 
