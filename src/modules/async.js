@@ -1,4 +1,4 @@
-{
+otp = {
   /*
 Sample code:
 
@@ -60,7 +60,7 @@ onLoad(){
         yield
       }
     }
-  }
+  }; otp
 }
 
 }
