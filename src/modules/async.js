@@ -1,4 +1,4 @@
-let otp = {
+{
   /*
 Sample code:
 
@@ -64,4 +64,4 @@ onLoad(){
 }
 
 }
-}; otp
+}
