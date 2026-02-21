@@ -1,5 +1,5 @@
 //callbacks is predefined in wc, is fine to use
-let otp = {
+{
   info: {
     name: 'moduleLoader',
     type: 'worldcode',
@@ -66,4 +66,4 @@ let otp = {
       dotModule.setCallbacks()
     }
   }
-}; otp
+}
