@@ -1,5 +1,5 @@
 
-t = {
+let otp = {
   /* osTS */
 /* The DotOS Task Scheduler */
   info: {
@@ -71,4 +71,4 @@ t = {
       }
     }
   }
-}
+}; otp
