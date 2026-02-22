@@ -1,4 +1,4 @@
-let otp = {
+{
   info: {
     name: 'dotError',
     type: 'worldcode',
@@ -48,4 +48,4 @@ let otp = {
       globalThis.dotError = new dotErr()
     }
   }
-}; otp
+}
