@@ -149,12 +149,48 @@
             return a.attributes.customDescription
           })
         }
+        setFSlot(f, chapter, idx, n){
+          api.setStandardChestItemSlot([f, this.disk, chapter], idx, 'Net', 1, undefined, {customDescription: n})
+        }
         getFileHeader(f){
           return this.getFileHeader_internal(this.hash.hashStr(f))
         }
         getFile(f){
           return this.getFile_internal(this.hash.hashStr(f))
         }
+        setFile_internal(f, contents){
+          let descs = JSON.stringify(contents).match(/[^]{1,450}/g)
+          let chunks = []
+          for(let i = 0; i < descs.length; i += 36){
+            chunks.push(descs.slice(i, i + 36))
+          }
+          let len = chunks.length
+          let p = JSON.parse(this.getFSlot(file, 0, 0))
+          p.length = len
+          this.setFSlot(file, 0, 0, JSON.stringify(obj))
+          // todo: finish setFile
+        }
+        /*let descs = JSON.stringify(contents.contents).match(/[^]{1,450}/g)
+          let chunks = []
+          for(let i = 0; i < descs.length; i += 36){
+            chunks.push(descs.slice(i, i + 36))
+          }
+          let len = chunks.length
+          api.setStandardChestItemSlot([file, this.disk, 0], 0, 'Net', 1, undefined, JSON.stringify({
+            name: contents.name,
+            extension: contents.extension,
+            length: len
+          }))
+          for(let i = 1; i <= len; i++){
+            TS.setTimeout(function(){
+              let f = chunks[i]
+              for(let j = 0; j < f.length; j++){
+                api.setStandardChestItemSlot([file, this.disk, i], j, 'Net', 1, undefined, {
+                  customDescription: chunks[i-1][j]
+                })
+              }
+            }, i)
+          }*/
       }
       globalThis.FS = new disk(-1728)
     }
