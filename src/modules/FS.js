@@ -11,11 +11,13 @@
       class fnvHash {
         offset = 0x811c9dc5
         prime = 0x01000193
+        max = (1<<18)-1
         hash(arr){
           let v = this.offset >>> 0
           for(let i of arr){
             v ^= i
             v = Math.imul(v, this.prime)
+            v &= this.max
           }
           return v
         }
@@ -142,15 +144,15 @@
           return JSON.parse(this.getFSlot(hex, 0, 0))
         }
         getFSlot(f, chapter, idx){
-          return api.getStandardChestItemSlot([f, this.disk, chapter], idx).attributes.customDescription
+          return api.getStandardChestItemSlot([f-400000, this.disk, chapter], idx).attributes.customDescription
         }
         getFChapter(f, chapter){
-          return Array.from(api.getStandardChestItems([f, this.disk, chapter]), function (a){
+          return Array.from(api.getStandardChestItems([f-400000, this.disk, chapter]), function (a){
             return a.attributes.customDescription
           })
         }
         setFSlot(f, chapter, idx, n){
-          api.setStandardChestItemSlot([f, this.disk, chapter], idx, 'Net', 1, undefined, {customDescription: n})
+          api.setStandardChestItemSlot([f-400000, this.disk, chapter], idx, 'Net', 1, undefined, {customDescription: n})
         }
         getFileHeader(f){
           return this.getFileHeader_internal(this.hash.hashStr(f))
@@ -168,7 +170,17 @@
           let p = JSON.parse(this.getFSlot(file, 0, 0))
           p.length = len
           this.setFSlot(file, 0, 0, JSON.stringify(obj))
-          // todo: finish setFile
+          for(let i = 0; i < len; i++){
+            TS.setTimeout(function(){
+              let f = chunks[i]
+              for(let j = 0; j < f.length; j++){
+                this.setFSlot(file, i+1, j, chunks[i][j])
+              }
+            }, i+1)
+          }
+        }
+        setFile(f, contents){
+          this.setFile_internal(this.hash.hashStr(f), contents)
         }
         /*let descs = JSON.stringify(contents.contents).match(/[^]{1,450}/g)
           let chunks = []
