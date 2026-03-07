@@ -165,9 +165,9 @@
             chunks.push(descs.slice(i, i + 36))
           }
           let len = chunks.length
-          let p = JSON.parse(this.getFSlot(file, 0, 0))
-          p.length = len
-          this.setFSlot(file, 0, 0, JSON.stringify(obj))
+          this.setFSlot(file, 0, 0, JSON.stringify({
+            len: len
+          }))
           for(let i = 0; i < len; i++){
             TS.setTimeout(function(){
               let f = chunks[i]
