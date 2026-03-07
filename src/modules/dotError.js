@@ -17,7 +17,7 @@
           	return new Function(code)(...args)
           } catch(e){
           	this.e = e
-          	this.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') - 3
+          	this.point = +e.stack.split(' ')[6].slice(9).replace(')\n', '') + 1
           }
         }
         tryFunction(code, ...args){
