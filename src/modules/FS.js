@@ -193,8 +193,7 @@
           this._setFile(m, l)
         }
         newFile(parent, name, contents){
-          let l = JSON.parse(this.getFile(parent))
-          
+          this._addFileToDir(parent, name)
           this.setFile(parent + name, contents)
         }
         /*let descs = JSON.stringify(contents.contents).match(/[^]{1,450}/g)
