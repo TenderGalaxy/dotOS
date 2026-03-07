@@ -194,7 +194,7 @@
         }
         newFile(parent, name, contents){
           this._addFileToDir(parent, name)
-          this.setFile(parent + name, contents)
+          this.setFile(parent + '/' + name, contents)
         }
         /*let descs = JSON.stringify(contents.contents).match(/[^]{1,450}/g)
           let chunks = []
