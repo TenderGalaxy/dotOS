@@ -4,7 +4,7 @@ Sample code:
 
 a = new Thread(function(){
   api.log('Hi!')
-  yield* this.await(awaitUserInput())
+  yield* threadLibs.sleep(20)
   api.log('Bye')
 })
 */
