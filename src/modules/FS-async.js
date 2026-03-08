@@ -9,21 +9,21 @@
   callbacks: {
     onLoad(){
       globalThis.asyncFS = class extends disk {
-        getFileAsync*(f){
+        *getFileAsync(f){
           let t = this.hash.hashStr(f)
           yield* this._loadFile(t)
           yield this._getFile(t)
         }
-        setFileAsync*(f, c){
+        *setFileAsync(f, c){
           let t = this.hash.hashStr(f)
           yield* this._loadFile(t)
           yield this.setFile(f, c)
         }
-        _loadFile*(f){
+        *_loadFile(f){
           yield this._isFileLoaded(f)
           yield this._isFileLoaded(f)
         }
-        loadFile*(f){
+        *loadFile(f){
           yield* this._loadFile(this.hash.hashStr(f))
         }
       }
