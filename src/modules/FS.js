@@ -199,7 +199,9 @@
         }
         newFile(parent, name, contents){
           this._addFileToDir(parent, name)
-          this.setFile(parent + '/' + name, contents)
+          let ha = this.hash.hashStr(parent + '/' + name)
+          api.setBlock(ha - 400000, this.disk, 0, 'Chest')
+          this._setFile(ha, contents)
         }
         _isFileLoaded(f){
           if(!this._isPlaceLoaded(f, 0)){
