@@ -21,7 +21,6 @@
         }
         *newFileAsync(p, n, c){
           yield* this.loadFile(p)
-          yield* this.loadFile(n)
           yield this.newFile(p, n, c)
         }
         *_loadFile(f){
