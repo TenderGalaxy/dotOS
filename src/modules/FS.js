@@ -181,6 +181,7 @@
               }
             }, i+1)
           }
+          return len + 1
         }
         setFile(f, contents){
           this._setFile(this.hash.hashStr(f), contents)
