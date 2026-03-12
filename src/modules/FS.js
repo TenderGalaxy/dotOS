@@ -135,7 +135,7 @@
           let head = this._getFileHeader(hex)
           let out = ''
           for(let i = 1; i <= head.len; i++){
-            out += getFChapter(hex, i).reduce((a, b) => (a + b), '')
+            out += this.getFChapter(hex, i).reduce((a, b) => (a + b), '')
           }
           return out
         }
