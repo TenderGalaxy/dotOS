@@ -196,7 +196,7 @@
           this._setFile(dir, l)
         }
         newFile(parent, name, contents){
-          this._addFileToDir(parent, name)
+          this._addFileToDir(this.hash.hashStr(parent), this.hash.hashStr(name))
           let ha = this.hash.hashStr(parent + '/' + name)
           api.setBlock(ha - 400000, this.disk, 0, 'Chest')
           this._setFile(ha, contents)
