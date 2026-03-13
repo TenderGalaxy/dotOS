@@ -126,10 +126,9 @@
           len: 5
         }
         */
-        constructor(disk, name){
+        constructor(disk){
           this.disk = disk
           this.hash = new fnvHash()
-          this.name = name
         }
         _getFile(hex){
           let head = this._getFileHeader(hex)
@@ -142,20 +141,20 @@
         _getFileHeader(hex){
           return JSON.parse(this.getFSlot(hex, 0, 0))
         }
-        getFSlot(f, chapter, idx){
-          return api.getStandardChestItemSlot([f-400000, this.disk, chapter], idx).attributes.customDescription
+        getFSlot(f, chapter, idx, disk = this.disk){
+          return api.getStandardChestItemSlot([f-400000, disk, chapter], idx).attributes.customDescription
         }
-        getFChapter(f, chapter){
-          return Array.from(api.getStandardChestItems([f-400000, this.disk, chapter]), function (a){
+        getFChapter(f, chapter, disk = this.disk){
+          return Array.from(api.getStandardChestItems([f-400000, disk, chapter]), function (a){
             let v = a?.attributes?.customDescription
             return v ? v : ''
           })
         }
-        setFSlot(f, chapter, idx, n){
-          api.setStandardChestItemSlot([f-400000, this.disk, chapter], idx, 'Net', 1, undefined, {customDescription: n})
+        setFSlot(f, chapter, idx, n, disk = this.disk){
+          api.setStandardChestItemSlot([f-400000, disk, chapter], idx, 'Net', 1, undefined, {customDescription: n})
         }
-        _isPlaceLoaded(f, chapter){
-          return (api.getBlockId(f-400000, this.disk, chapter) !== 1)
+        _isPlaceLoaded(f, chapter, disk = this.disk){
+          return (api.getBlockId(f-400000, disk, chapter) !== 1)
         }
         getFileHeader(f){
           return this._getFileHeader(this.hash.hashStr(f))
@@ -174,11 +173,11 @@
             len: len
           }))
           for(let i = 0; i < len; i++){
-            TS.setTimeout((f, i, file, func) => {
+            TS.setTimeout((f, i, file, func, disk) => {
               for(let j = 0; j < f.length; j++){
-                func(file, i+1, j, f[j])
+                func(file, i+1, j, f[j], disk)
               }
-            }, i+20, chunks[i], i, file, this.setFSlot)
+            }, i+20, chunks[i], i, file, this.setFSlot, this.disk)
           }
           return len + 1
         }
