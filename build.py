@@ -1,8 +1,11 @@
 import github
-from github import Github
+# from github import Github
 import os
-
-def orderArray(arr, req):
+try:
+  os.mkdir('build')
+except:
+  pass
+'''def orderArray(arr, req):
   output = []
   while len(arr) > 0:
     pr = len(arr)
@@ -37,8 +40,8 @@ def pullGithub_getFname(x):
   x = str(x)
   return x[x.index('"')+1:-2]
 def pullGithub_convDir(x):
-  return [pullGithub_getFname(i) for i in x]
-pullGithub('tendergalaxy/dotOS')
+  return [pullGithub_getFname(i) for i in x]'''
+# pullGithub('tendergalaxy/dotOS')
 
 # Combine
 
