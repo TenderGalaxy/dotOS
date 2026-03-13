@@ -187,7 +187,7 @@
         _addFileToDir(dir, name){
           let l = JSON.parse(this._getFile(dir))
           l[l.length] = name
-          this._setFile(dir, l)
+          this._setFile(dir, JSON.stringify(l))
         }
         _removeFileFromDir(dir, name){
           let l = JSON.parse(this._getFile(dir))
