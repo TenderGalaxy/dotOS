@@ -18,33 +18,42 @@
         cyclesPerTick: 1,
         lastUsedTick: 0,
         tick: 0,
-        scheduleFirstUnused(action){
-          TS.lastUsedTick = Math.max(TS.lastUsedTick, TS.tick+1)
-          TS.work[TS.lastUsedTick] = [action]
-          TS.lastUsedTick++
+        makeAction(action, ...args){
+          return {f: action, a: args}
         },
-        scheduleNextTick(action){
-          if(TS.work?.[TS.tick + 1]){
-            TS.work[TS.tick + 1].push(action)
-          } else {
-            TS.work[TS.tick + 1] = [action]
+        parseAction(action){
+          dotError.tryFunction(action.f, ...action.a)
+          if(dotError.hasError()){
+            dotError.log()
           }
         },
-        setTimeout(action, delay){
+        scheduleFirstUnused(action, ...args){
+          TS.lastUsedTick = Math.max(TS.lastUsedTick, TS.tick+1)
+          TS.work[TS.lastUsedTick] = [TS.makeAction(action, ...args)]
+          TS.lastUsedTick++
+        },
+        scheduleNextTick(action, ...args){
+          if(TS.work?.[TS.tick + 1]){
+            TS.work[TS.tick + 1].push(TS.makeAction(action, ...args))
+          } else {
+            TS.work[TS.tick + 1] = [TS.makeAction(action, ...args)]
+          }
+        },
+        setTimeout(action, delay, ...args){
           if(delay < 1){
             throw new ValueError('TS.setTimeout recieved a negative delay value.')
           }
           TS.lastUsedTick = Math.max(TS.lastUsedTick, TS.tick + delay)
           if(TS.work?.[TS.tick + delay]){
-            TS.work[TS.tick + delay].push(action)
+            TS.work[TS.tick + delay].push(TS.makeAction(action, ...args))
           } else {
-            TS.work[TS.tick + delay] = [action]
+            TS.work[TS.tick + delay] = [TS.makeAction(action, ...args)]
           }
         },
         cancelSpecific(delay, fname){
           let t = []
           for(let i of TS.work[TS.tick + delay]){
-            if(i.name !== fname){
+            if(i.f.name !== fname){
               t.push(i)
             }
           }
@@ -61,14 +70,9 @@
         TS.stack = [...TS.work[TS.tick], ...TS.stack]
       }
       TS.work[TS.tick] = null
-      let f;
       while(TS.stack.length > 0){
         eval()
-        f = TS.stack.shift()
-        dotError.tryFunction(f)
-        if(dotError.hasError()){
-          dotError.log()
-        }
+        TS.parseAction(TS.stack.shift())
       }
     }
   }
