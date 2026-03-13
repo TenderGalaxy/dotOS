@@ -192,7 +192,7 @@
         _removeFileFromDir(dir, name){
           let l = JSON.parse(this._getFile(dir))
           l.splice(l.indexOf(name), 1)
-          this._setFile(dir, JSON.stringify(l)(
+          this._setFile(dir, JSON.stringify(l))
         }
         newFile(parent, name, contents){
           this._addFileToDir(this.hash.hashStr(parent), this.hash.hashStr(name))
