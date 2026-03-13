@@ -5,7 +5,7 @@ try:
   os.mkdir('build')
 except:
   pass
-'''def orderArray(arr, req):
+def orderArray(arr, req):
   output = []
   while len(arr) > 0:
     pr = len(arr)
@@ -20,7 +20,7 @@ except:
       print(req)
       raise ValueError('This array is circular!')
   return output
-def pullGithub(repoName):
+'''def pullGithub(repoName):
   g = Github(auth=github.Auth.Token('GITHUB_PAT_TOKEN')) # FILL WITH YOUR PAT TOKEN
   repo = g.get_repo(repoName)
   os.makedirs(repoName, exist_ok = True)
