@@ -28,9 +28,8 @@
           }
         },
         scheduleFirstUnused(action, ...args){
-          TS.lastUsedTick = Math.max(TS.lastUsedTick, TS.tick+1)
+          TS.lastUsedTick = Math.max(TS.lastUsedTick, TS.tick + 1) + 1
           TS.work[TS.lastUsedTick] = [TS.makeAction(action, ...args)]
-          TS.lastUsedTick++
         },
         scheduleNextTick(action, ...args){
           if(TS.work?.[TS.tick + 1]){
