@@ -1,0 +1,2 @@
+PyGithub==2.8.1
+quickjs==1.19.4
