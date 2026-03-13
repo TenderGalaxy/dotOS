@@ -139,7 +139,8 @@
           return out
         }
         _getFileHeader(hex){
-          return JSON.parse(this.getFSlot(hex, 0, 0))
+          let m = this.getFSlot(hex, 0, 0)
+          return m ? JSON.parse(m) : undefined
         }
         getFSlot(f, chapter, idx, disk = this.disk){
           return api.getStandardChestItemSlot([f-400000, disk, chapter], idx)?.attributes?.customDescription
