@@ -24,11 +24,7 @@
           yield this.newFile(p, n, c)
         }
         *_loadFile(f){
-          let t = this._isFileLoaded(f)
-          if(!t){
-            yield
-            yield this._isFileLoaded(f)
-          } else {
+          while(!this._isFileLoaded(f)){
             yield
           }
         }
