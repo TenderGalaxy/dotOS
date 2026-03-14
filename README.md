@@ -9,9 +9,9 @@ git clone "https://www.github.com/tendergalaxy/dotOS"
 ```
 2. Turn the puller into an executable:
 ```bash
-chmod +x pull.sh
+chmod +x dotOS/pull.sh
 ```
 3. Build the repository into bloxd code:
 ```bash
-./pull.sh
+./dotOS/pull.sh
 ```
