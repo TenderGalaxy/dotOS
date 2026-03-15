@@ -68,7 +68,7 @@
       } else {
         TS.stack = [...TS.work[TS.tick], ...TS.stack]
       }
-      TS.work[TS.tick] = null
+      delete TS.work[TS.tick]
       while(TS.stack.length > 0){
         eval()
         TS.parseAction(TS.stack.shift())
