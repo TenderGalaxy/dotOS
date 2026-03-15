@@ -220,6 +220,9 @@
         isFileLoaded(f){
           return this._isFileLoaded(this.hash.hashStr(f))
         }
+        isFileValid(f){
+          return this.getFileHeader(f) ? true : false
+        }
         /*let descs = JSON.stringify(contents.contents).match(/[^]{1,450}/g)
           let chunks = []
           for(let i = 0; i < descs.length; i += 36){
