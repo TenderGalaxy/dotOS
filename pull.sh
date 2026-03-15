@@ -1,8 +1,12 @@
 #!/bin/zsh
 cd "$(dirname "$0")" || exit
 echo "Updating repo..."
-git reset --hard origin/main || {
+git fetch origin || {
   echo "Install git!"
+  exit
+}
+git reset --hard origin/main || {
+  echo "whgarrr?"
   exit
 }
 echo "Building dotOS…"
