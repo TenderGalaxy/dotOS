@@ -4,7 +4,7 @@
     type: 'os',
     version: '1.0.0',
     source: 'github.com/tendergalaxy/dotOS/blob/main/src/modules/jsonLoad.js',
-    requirements: []
+    requirements: ['FS-async']
   },
   callbacks: {
     onLoad(){
