@@ -130,7 +130,7 @@ for i in dir:
   with open('src/data/' + i) as f:
     name = i[:i.rfind('.')]
     extend = i[i.rfind('.')+1:]
-    codeblock.write(f'toUpload.push(\{name: {i}, contents: JSON.stringify({f.read()})\})')
+    codeblock.write(f'toUpload.push({{name: {i}, contents: JSON.stringify({f.read()})}})')
 for i in wcCallbacks:
   worldcode.write(i)
 t = orderArray(cbName[:], requirements)
