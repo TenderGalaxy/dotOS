@@ -93,7 +93,7 @@ for fileName in dir:
     js.eval('callbackNames = Object.keys(obj.callbacks)')
     req = getList('obj.info.requirements')
     callbacks = [js.eval('callbackNames[' + str(i) + ']') for i in range(js.eval('callbackNames.length'))]
-    print(f'''
+    '''print(f\'''
     Loading package {js.eval('obj.info.name')}
       type: {objtype}
       version: {js.eval('obj.info.version')}
@@ -101,7 +101,7 @@ for fileName in dir:
       requirements: {req}
     with the following callbacks:
       {', '.join(callbacks)}
-    ''')
+    \''')'''
     if objtype == 'worldcode':
       if 'onLoad' in callbacks:
         t = js.eval('obj.callbacks.onLoad.toString()')
