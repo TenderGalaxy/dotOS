@@ -7,11 +7,7 @@ A multithreaded modularized Operating System that simplifies codeloading, FS, an
 ```bash
 git clone "https://www.github.com/tendergalaxy/dotOS"
 ```
-2. Turn the puller into an executable:
-```bash
-chmod +x dotOS/pull.sh
-```
-3. Build the repository into bloxd code:
+2. Build the repository into bloxd code:
 ```bash
 ./dotOS/pull.sh
 ```
