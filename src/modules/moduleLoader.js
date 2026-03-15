@@ -19,7 +19,7 @@
         callbacks: callbacks,
         refreshOnLoad: true,
         *load(name){
-          let t = yield* FS.getFileAsync(`dotOS/modules/${name}.js`)
+          let t = yield* FS.getFileAsync(name)
           let temp = dotError.try('return ' + t)()
           if(dotError.hasError()){
             dotError.log()
