@@ -1,7 +1,7 @@
 #!/bin/zsh
 cd "$(dirname "$0")" || exit
 echo "Updating repo..."
-if [ "$1" != "-k" ] then
+if [ "$1" != "-k" ]; then
   git reset --hard origin/main || {
     echo "Install git!"
     exit
