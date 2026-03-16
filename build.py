@@ -88,7 +88,7 @@ for fileName in dir:
     '''f = f.replace('"', '\\"')
     f = f.replace("'", "\\'")
     f = f.replace('`', '\\`')'''
-    obj = js.eval(f)
+    js.eval(f)
     objtype = js.eval('obj.info.type')
     js.eval('callbackNames = Object.keys(obj.callbacks)')
     req = getList('obj.info.requirements')
