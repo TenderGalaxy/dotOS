@@ -9,12 +9,19 @@ obj = {
 	callbacks: {
 		onLoad() {
 			// THIS CODE WAS WRITTEN BY NICKNAME AND REUSED
-			globalThis.bigArray = class {
+			globalThis.BigArray = class {
 				#pool = (0, eval)("[" + "[],".repeat(5220) + "]")
 				#lastIndex;
 
-				constructor(length = 0) {
-					this.#lastIndex = length - 1;
+				constructor(arr) {
+					this.#lastIndex = arr.length - 1;
+					for(let i = 0; i < Math.min(5220, arr.length); i++){
+						let c = 0
+						for(let j = i; j < length; j += 5220){
+							this.#pool[i][c] = arr[j]
+							c++
+						}
+					}
 				}
 
 				get length() {
