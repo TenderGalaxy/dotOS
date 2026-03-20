@@ -15,6 +15,10 @@ obj = {
 			globalThis.dotModule = {
 				callbacks: [...callbacks],
 				refreshOnLoad: true,
+				/**
+				 * Load a file as a module.
+				 * @param {string} name - File name 
+				 */
 				*load(name) {
 					let t = yield* FS.getFileAsync(name)
 					let temp = dotError.try(t)()
@@ -28,11 +32,17 @@ obj = {
 						dotModule.refreshModules()
 					}
 				},
+				/**
+				 * Delete every callback.
+				 */
 				resetAllCallbacks() {
 					for (let i of dotModule.callbacks) {
 						dotOS.callbacks[i] = []
 					}
 				},
+				/**
+				 * Refresh all modules and create corresponding callbacks.
+				 */
 				refreshModules() {
 					dotModule.resetAllCallbacks()
 					for (let [i, j] of Object.entries(dotOS.module)) {

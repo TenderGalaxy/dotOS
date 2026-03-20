@@ -157,9 +157,19 @@ obj = {
 				_isPlaceLoaded(f, chapter, disk = this.disk) {
 					return (api.getBlockId(f - 400000, disk, chapter) !== 1)
 				}
+				/**
+				 * 
+				 * @param {string} f - The file name
+				 * @returns {{len: number}|undefined} File Header
+				 */
 				getFileHeader(f) {
 					return this._getFileHeader(this.hash.hashStr(f))
 				}
+				/**
+				 * Get a file
+				 * @param {string} f - The file name 
+				 * @returns {string} File
+				 */
 				getFile(f) {
 					return this._getFile(this.hash.hashStr(f))
 				}
@@ -182,6 +192,11 @@ obj = {
 					}
 					return len + 1
 				}
+				/**
+				 * Set a file with contents
+				 * @param {string} f - File name
+				 * @param {string} contents - Contents of the file
+				 */
 				setFile(f, contents) {
 					this._setFile(this.hash.hashStr(f), contents)
 				}
@@ -195,6 +210,12 @@ obj = {
 					l.splice(l.indexOf(name), 1)
 					this._setFile(dir, JSON.stringify(l))
 				}
+				/**
+				 * Create a new file as parent/name
+				 * @param {string} parent - Parent directory of the file
+				 * @param {string} name - Individual file name (e.g colors.json)
+				 * @param {string} contents - File contents
+				 */
 				newFile(parent, name, contents) {
 					this._addFileToDir(this.hash.hashStr(parent), this.hash.hashStr(name))
 					let ha = this.hash.hashStr(parent + '/' + name)
@@ -217,9 +238,19 @@ obj = {
 					}
 					return true
 				}
+				/**
+				 * Check if a file is loaded.
+				 * @param {string} f - Name of the file
+				 * @returns {boolean} Whether the file is loaded
+				 */
 				isFileLoaded(f) {
 					return this._isFileLoaded(this.hash.hashStr(f))
 				}
+				/**
+				 * Check if a file exists, given the header is loaded.
+				 * @param {string} f - Name of the file
+				 * @returns {boolean} Whether the file exists
+				 */
 				isFileValid(f) {
 					return this.getFileHeader(f) ? true : false
 				}
