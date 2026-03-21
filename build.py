@@ -20,126 +20,66 @@ def orderArray(arr, req):
       print(req)
       raise ValueError('This array is circular!')
   return output
-'''def pullGithub(repoName):
-  g = Github(auth=github.Auth.Token('GITHUB_PAT_TOKEN')) # FILL WITH YOUR PAT TOKEN
-  repo = g.get_repo(repoName)
-  os.makedirs(repoName, exist_ok = True)
-  pullGithub_pull(repo, 'src')
-def pullGithub_pull(repo, path):
-  os.makedirs(path, exist_ok = True)
-  f = pullGithub_convDir(repo.get_contents(path))
-  for i in f:
-    print(i)
-    if not '.' in i:
-      pullGithub_pull(repo, i)
-    else:
-      t = open(i, 'w')
-      t.write(repo.get_contents(i).decoded_content.decode('utf-8'))
-      t.close()
-def pullGithub_getFname(x):
-  x = str(x)
-  return x[x.index('"')+1:-2]
-def pullGithub_convDir(x):
-  return [pullGithub_getFname(i) for i in x]'''
-# pullGithub('tendergalaxy/dotOS')
 
-# Combine
-
+# Fetch file contents
 import quickjs
-import os
-import json
 js = quickjs.Context()
-
 def getList(v):
   js.eval(f'temp = {v}')
   return [js.eval(f'temp[{i}]') for i in range(js.eval('temp.length'))]
-def trimTabs(t, m):
-  t = t[7:-1].split('\n')
-  for i in range(2, len(t)):
-    t[i] = t[i][2*m:]
-  return '\n'.join(t)
-dir = ['src/modules/' + i for i in os.listdir('src/modules')]
-dir = [i for i in dir if i[-3:] == '.js']
-worldcode = open('build/worldcode.js', 'w')
-codeblock = open('build/codeblock.js', 'w')
-_ = '''/*
-DotOS
-  - written by fenl_, 2026
-(GPL V3 License)
-I did not write this code myself, I wrote a script in python
-to compile modules into separate code blocks and world code.
-
-*/
-'''
-worldcode.write(_)
-worldcode.write('dotOS = {}\n')
-codeblock.write(_)
-codeblock.write('''
-toUpload = []
-''')
-wcCallbacks = []
-cbName = []
-cbCode = []
-requirements = {}
-print(dir)
-for fileName in dir:
-  with open(fileName) as file:
-    f = file.read().strip()
-    '''f = f.replace('"', '\\"')
-    f = f.replace("'", "\\'")
-    f = f.replace('`', '\\`')'''
-    js.eval(f)
-    objtype = js.eval('obj.info.type')
-    js.eval('callbackNames = Object.keys(obj.callbacks)')
-    req = getList('obj.info.requirements')
-    callbacks = [js.eval('callbackNames[' + str(i) + ']') for i in range(js.eval('callbackNames.length'))]
-    '''print(f\'''
-    Loading package {js.eval('obj.info.name')}
-      type: {objtype}
-      version: {js.eval('obj.info.version')}
-      source: {js.eval('obj.info.source')}
-      requirements: {req}
-    with the following callbacks:
-      {', '.join(callbacks)}
-    \''')'''
-    if objtype == 'worldcode':
+modules = ['src/modules/' + i for i in os.listdir('src/modules')]
+world = []
+block = {}
+files = []
+for filename in modules:
+  print(f'Now loading {filename}')
+  with open(filename) as rawfile:
+    file = rawfile.read().strip()
+    js.eval(file)
+    type = js.eval('obj.info.type') # Either 'os' or 'worldcode'
+    callbacks = getList('Object.keys(obj.callbacks)')
+    if type == 'worldcode':
       if 'onLoad' in callbacks:
-        t = js.eval('obj.callbacks.onLoad.toString()')
-        worldcode.write(f'{t[t.index('{')+1:-2]}\n')
+        func = js.eval('obj.callbacks.onLoad.toString()')
+        world.append(f'{func[func.index('{')+1:-2]}')
         callbacks.remove('onLoad')
       for i in callbacks:
-        callf = js.eval(f'obj.callbacks.{i}.toString()')
-        callf = 'function' + callf[callf.index('('):]
-        wcCallbacks.append(f'dotOS.callbacks.{i}.push(' + callf +')\n')
-    elif objtype == 'os':
-      t = ''
+        func = js.eval(f'obj.callbacks.{i}.toString()')
+        func = 'function' + func[func.index('('):]
+        world.append(f'dotOS.callbacks.{i}.push({func})\n')
+    elif type == 'os':
+      code = ''
       if 'onLoad' in callbacks:
-        m = js.eval('obj.callbacks.onLoad.toString()')
-        t += (f'{m[m.index('{')+1:-2]}\n')
+        func = js.eval('obj.callbacks.onLoad.toString()')
+        code += (f'{func[func.index('{')+1:-2]}\n')
         callbacks.remove('onLoad')
       for i in callbacks:
-        callf = js.eval(f'obj.callbacks.{i}.toString()')
-        callf = 'function' + callf[callf.index('('):]
-        t += (f'dotOS.callbacks.{i}.push(' + callf +')\n')
-      n = js.eval('obj.info.name')
-      cbName.append(n)
-      cbCode.append(t)
-      requirements[n] = req
+        func = js.eval(f'obj.callbacks.{i}.toString()')
+        func = 'function' + func[func.index('('):]
+        code += (f'dotOS.callbacks.{i}.push(' + func +')\n')
+      name = js.eval('obj.info.name')
+      block[name] = [code, getList('obj.info.requirements')]
 dir = [i for i in os.listdir('src/data/')]
 for i in dir:
   with open('src/data/' + i) as f:
     name = i[:i.rfind('.')]
     extend = i[i.rfind('.')+1:]
-    codeblock.write(f'''toUpload.push({{
+    files += f'''toUpload.push({{
         name: \'{i}\',
         contents: JSON.stringify({f.read()})
-      }})''')
-for i in wcCallbacks:
-  worldcode.write(i)
-t = orderArray(cbName[:], requirements)
-print(f'Ordered in {t}')
-for i in range(len(t)):
-  codeblock.write(cbCode[cbName.index(t[i])])
-worldcode.write('callbacks = null\n')
-worldcode.close()
-codeblock.close()
+      }})'''
+with open('build/worldcode.js', 'w') as f:
+  for i in world:
+    f.write(i)
+names = [key for key, value in block.items()]
+replacements = [value[0] for key, value in block.items()]
+requirements = {key: value[1] for key, value in block.items()}
+names = orderArray(names[:], requirements)
+print(f'Ordered in {names}')
+with open('build/codeblock.js', 'w') as f:
+  for i in range(len(names)):
+    f.write(replacements[i])
+with open('build/files.js', 'w') as f:
+  f.write('toUpload = []\n')
+  for i in files:
+    f.write(i)

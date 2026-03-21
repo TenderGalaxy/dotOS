@@ -8,9 +8,9 @@ obj = {
 	},
 	callbacks: {
 		onLoad() {
-			globalThis.mountDrive = { threads: [], toUpload: toUpload, filesLoaded: false }
+			globalThis.mountDrive = { threads: {}, toUpload: toUpload, filesLoaded: false }
 			toUpload = null
-			mountDrive.threads.push(new Thread(function* () {
+			mountDrive.threads.mount = new Thread(function* () {
 				let f = FS.hash.hashStr('dotOS')
 				for (let i = 0; i < 3; i++) {
 					api.getBlockId(f - 400000, FS.disk, 0)
@@ -25,15 +25,15 @@ obj = {
 				yield* FS.forceSetFile('dotOS', 'data', '[]')
 				api.log('Drive mounted!')
 
-			}))
-			mountDrive.threads.push(new Thread(function* () {
-				yield* threadLibs.waitUntil(() => (mountDrive.threads[0].idle))
+			})
+			mountDrive.threads.files = new Thread(function* () {
+				yield* threadLibs.waitUntil(() => (mountDrive.threads.mount.isIdle()))
 				for (let i of mountDrive.toUpload) {
 					yield* FS.forceSetFile('dotOS/data', i.name, i.contents)
 				}
 				mountDrive.filesLoaded = true
 				api.log('Finished loading files!')
-			}))
+			})
 		}
 	}
 }

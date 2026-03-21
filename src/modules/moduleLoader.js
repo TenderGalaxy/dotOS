@@ -76,6 +76,7 @@ obj = {
 					}
 				}
 			}
+			dotModule.resetAllCallbacks()
 			dotModule.setCallbacks()
 			callbacks = null
 		}

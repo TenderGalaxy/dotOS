@@ -1,13 +1,7 @@
-/*
-DotOS
-  - written by fenl_, 2026
-(GPL V3 License)
-I did not write this code myself, I wrote a script in python
-to compile modules into separate code blocks and world code.
 
-*/
-dotOS = {}
-
+			/**
+			 * @namespace TS
+			 */
 			globalThis.TS = {
 				work: {},
 				stack: [],
@@ -24,10 +18,22 @@ dotOS = {}
 						dotError.log()
 					}
 				},
+				/**
+				 * Schedule a function to execute at the first unused tick
+				 * @memberof TS
+				 * @param {function} action - Function
+				 * @param  {...any} args - Arguments
+				 */
 				scheduleFirstUnused(action, ...args) {
 					TS.lastUsedTick = Math.max(TS.lastUsedTick, TS.tick + 1) + 1
 					TS.work[TS.lastUsedTick] = [TS.makeAction(action, ...args)]
 				},
+				/**
+				 * Schedule a function to happen next tick
+				 * @memberof TS
+				 * @param {function} action - Function
+				 * @param  {...any} args - Arguments
+				 */
 				scheduleNextTick(action, ...args) {
 					if (TS.work?.[TS.tick + 1]) {
 						TS.work[TS.tick + 1].push(TS.makeAction(action, ...args))
@@ -35,6 +41,13 @@ dotOS = {}
 						TS.work[TS.tick + 1] = [TS.makeAction(action, ...args)]
 					}
 				},
+				/**
+				 * Set a function to happen n ticks later.
+				 * @memberof TS
+				 * @param {*} action - Function
+				 * @param {*} delay - Delay in 50-millisecond ticks
+				 * @param  {...any} args - Arguments
+				 */
 				setTimeout(action, delay, ...args) {
 					if (delay < 1) {
 						throw new ValueError('TS.setTimeout recieved a negative delay value.')
@@ -56,14 +69,35 @@ dotOS = {}
 					TS.work[TS.tick + delay] = t
 				}
 			}
-	
+	dotOS.callbacks.tick.push(function() {
+			TS.tick++
+			if (!TS.work?.[TS.tick]) return
+			if (TS.prioritizeUnfinishedWork) {
+				TS.stack = [...TS.stack, ...TS.work[TS.tick]]
+			} else {
+				TS.stack = [...TS.work[TS.tick], ...TS.stack]
+			}
+			delete TS.work[TS.tick]
+			while (TS.stack.length > 0) {
+				eval()
+				TS.parseAction(TS.stack.shift())
+			}
+		})
 
 			globalThis.callbacks = ["tick", "onClose", "onPlayerJoin", "onPlayerLeave", "onPlayerJump", "onRespawnRequest", "playerCommand", "onPlayerChat", "onPlayerChangeBlock", "onPlayerDropItem", "onPlayerPickedUpItem", "onPlayerSelectInventorySlot", "onBlockStand", "onPlayerAttemptCraft", "onPlayerCraft", "onPlayerAttemptOpenChest", "onPlayerOpenedChest", "onPlayerMoveItemOutOfInventory", "onPlayerMoveInvenItem", "onPlayerMoveItemIntoIdxs", "onPlayerSwapInvenSlots", "onPlayerMoveInvenItemWithAmt", "onPlayerAttemptAltAction", "onPlayerAltAction", "onPlayerClick", "onClientOptionUpdated", "onMobSettingUpdated", "onInventoryUpdated", "onChestUpdated", "onWorldChangeBlock", "onCreateBloxdMeshEntity", "onEntityCollision", "onPlayerAttemptSpawnMob", "onWorldAttemptSpawnMob", "onPlayerSpawnMob", "onWorldSpawnMob", "onWorldAttemptDespawnMob", "onMobDespawned", "onPlayerAttack", "onPlayerDamagingOtherPlayer", "onPlayerDamagingMob", "onMobDamagingPlayer", "onMobDamagingOtherMob", "onAttemptKillPlayer", "onPlayerKilledOtherPlayer", "onMobKilledPlayer", "onPlayerKilledMob", "onMobKilledOtherMob", "onPlayerPotionEffect", "onPlayerDamagingMeshEntity", "onPlayerBreakMeshEntity", "onPlayerUsedThrowable", "onPlayerThrowableHitTerrain", "onTouchscreenActionButton", "onTaskClaimed", "onChunkLoaded", "onPlayerRequestChunk", "onItemDropCreated", "onPlayerStartChargingItem", "onPlayerFinishChargingItem", "onPlayerFinishQTE", "doPeriodicSave"]
 			dotOS.module ??= {}
 			dotOS.callbacks ??= {}
+			/**
+			 * @namespace dotModule
+			 */
 			globalThis.dotModule = {
 				callbacks: [...callbacks],
 				refreshOnLoad: true,
+				/**
+				 * Load a file as a module.
+				 * @memberof dotModule
+				 * @param {string} name - File name 
+				 */
 				*load(name) {
 					let t = yield* FS.getFileAsync(name)
 					let temp = dotError.try(t)()
@@ -77,11 +111,19 @@ dotOS = {}
 						dotModule.refreshModules()
 					}
 				},
+				/**
+				 * @memberof dotModule
+				 * Delete every callback.
+				 */
 				resetAllCallbacks() {
 					for (let i of dotModule.callbacks) {
 						dotOS.callbacks[i] = []
 					}
 				},
+				/**
+				 * @memberof dotModule
+				 * Refresh all modules and create corresponding callbacks.
+				 */
 				refreshModules() {
 					dotModule.resetAllCallbacks()
 					for (let [i, j] of Object.entries(dotOS.module)) {
@@ -109,10 +151,10 @@ dotOS = {}
 					}
 				}
 			}
+			dotModule.resetAllCallbacks()
 			dotModule.setCallbacks()
 			callbacks = null
 	
-
 			class dotErr {
 				constructor() { }
 				try(code, ...args) {
@@ -152,7 +194,6 @@ dotOS = {}
 			}
 			globalThis.dotError = new dotErr()
 	
-
 			class fnvHash {
 				offset = 0x811c9dc5
 				prime = 0x01000193
@@ -257,6 +298,9 @@ dotOS = {}
 				})
 			  }
 			}*/
+			/**
+			 * @namespace FS
+			 */
 			globalThis.disk = class {
 				/*
 				Contents of a directory:
@@ -302,9 +346,21 @@ dotOS = {}
 				_isPlaceLoaded(f, chapter, disk = this.disk) {
 					return (api.getBlockId(f - 400000, disk, chapter) !== 1)
 				}
+				/**
+				 * 
+				 * @param {string} f - The file name
+				 * @memberof FS
+				 * @returns {{len: number}|undefined} File Header
+				 */
 				getFileHeader(f) {
 					return this._getFileHeader(this.hash.hashStr(f))
 				}
+				/**
+				 * Get a file
+				 * @param {string} f - The file name 
+				 * @memberof FS
+				 * @returns {string} File
+				 */
 				getFile(f) {
 					return this._getFile(this.hash.hashStr(f))
 				}
@@ -327,6 +383,12 @@ dotOS = {}
 					}
 					return len + 1
 				}
+				/**
+				 * Set a file with contents
+				 * @memberof FS
+				 * @param {string} f - File name
+				 * @param {string} contents - Contents of the file
+				 */
 				setFile(f, contents) {
 					this._setFile(this.hash.hashStr(f), contents)
 				}
@@ -340,6 +402,13 @@ dotOS = {}
 					l.splice(l.indexOf(name), 1)
 					this._setFile(dir, JSON.stringify(l))
 				}
+				/**
+				 * Create a new file as parent/name
+				 * @memberof FS
+				 * @param {string} parent - Parent directory of the file
+				 * @param {string} name - Individual file name (e.g colors.json)
+				 * @param {string} contents - File contents
+				 */
 				newFile(parent, name, contents) {
 					this._addFileToDir(this.hash.hashStr(parent), this.hash.hashStr(name))
 					let ha = this.hash.hashStr(parent + '/' + name)
@@ -362,27 +431,24 @@ dotOS = {}
 					}
 					return true
 				}
+				/**
+				 * Check if a file is loaded.
+				 * @memberof FS
+				 * @param {string} f - Name of the file
+				 * @returns {boolean} Whether the file is loaded
+				 */
 				isFileLoaded(f) {
 					return this._isFileLoaded(this.hash.hashStr(f))
 				}
+				/**
+				 * Check if a file exists, given the header is loaded.
+				 * @memberof FS
+				 * @param {string} f - Name of the file
+				 * @returns {boolean} Whether the file exists
+				 */
 				isFileValid(f) {
 					return this.getFileHeader(f) ? true : false
 				}
 			}
 			globalThis.FS = new disk(-1728, 'FS')
 	
-dotOS.callbacks.tick.push(function() {
-			TS.tick++
-			if (!TS.work?.[TS.tick]) return
-			if (TS.prioritizeUnfinishedWork) {
-				TS.stack = [...TS.stack, ...TS.work[TS.tick]]
-			} else {
-				TS.stack = [...TS.work[TS.tick], ...TS.stack]
-			}
-			delete TS.work[TS.tick]
-			while (TS.stack.length > 0) {
-				eval()
-				TS.parseAction(TS.stack.shift())
-			}
-		})
-callbacks = null

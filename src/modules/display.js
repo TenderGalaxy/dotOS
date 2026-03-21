@@ -17,9 +17,10 @@ obj = {
 					}
 				}
 				yield
-				globalThis.display = new Display(285, 125)
+				//globalThis.display = new Display(285, 125) will add back in later
 			}
 			let disp1 = new Thread(function*(){
+        yield* threadLibs.waitUntil(() => mountDrive.threads.files.isIdle())
 				let m = yield* JSON.loadFile('dotOS/data/colors.json')
 				globalThis.dotOS.htmlColors = {hex: new BigArray(m.hex), names: new BigArray(m.names)}
 				m = null
