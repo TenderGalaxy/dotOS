@@ -29,6 +29,7 @@ def getList(v):
   return [js.eval(f'temp[{i}]') for i in range(js.eval('temp.length'))]
 modules = ['src/modules/' + i for i in os.listdir('src/modules')]
 world = []
+worldCallbacks = []
 block = {}
 files = []
 for filename in modules:
@@ -46,7 +47,7 @@ for filename in modules:
       for i in callbacks:
         func = js.eval(f'obj.callbacks.{i}.toString()')
         func = 'function' + func[func.index('('):]
-        world.append(f'dotOS.callbacks.{i}.push({func})\n')
+        worldCallbacks.append(f'dotOS.callbacks.{i}.push({func})\n')
     elif type == 'os':
       code = ''
       if 'onLoad' in callbacks:
@@ -69,15 +70,18 @@ for i in dir:
         contents: JSON.stringify({f.read()})
       }})'''
 with open('build/worldcode.js', 'w') as f:
+  f.write('dotOS = {}')
   for i in world:
     f.write(i)
+  for i in worldCallbacks:
+    f.write(i)
 names = [key for key, value in block.items()]
-replacements = [value[0] for key, value in block.items()]
+replacements = {key: value[0] for key, value in block.items()}
 requirements = {key: value[1] for key, value in block.items()}
 names = orderArray(names[:], requirements)
 print(f'Ordered in {names}')
 with open('build/codeblock.js', 'w') as f:
-  for i in range(len(names)):
+  for i in names:
     f.write(replacements[i])
 with open('build/files.js', 'w') as f:
   f.write('toUpload = []\n')
