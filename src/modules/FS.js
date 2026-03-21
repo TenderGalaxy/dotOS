@@ -112,6 +112,9 @@ obj = {
 				})
 			  }
 			}*/
+			/**
+			 * @namespace FS
+			 */
 			globalThis.disk = class {
 				/*
 				Contents of a directory:
@@ -160,6 +163,7 @@ obj = {
 				/**
 				 * 
 				 * @param {string} f - The file name
+				 * @memberof FS
 				 * @returns {{len: number}|undefined} File Header
 				 */
 				getFileHeader(f) {
@@ -168,6 +172,7 @@ obj = {
 				/**
 				 * Get a file
 				 * @param {string} f - The file name 
+				 * @memberof FS
 				 * @returns {string} File
 				 */
 				getFile(f) {
@@ -194,6 +199,7 @@ obj = {
 				}
 				/**
 				 * Set a file with contents
+				 * @memberof FS
 				 * @param {string} f - File name
 				 * @param {string} contents - Contents of the file
 				 */
@@ -212,6 +218,7 @@ obj = {
 				}
 				/**
 				 * Create a new file as parent/name
+				 * @memberof FS
 				 * @param {string} parent - Parent directory of the file
 				 * @param {string} name - Individual file name (e.g colors.json)
 				 * @param {string} contents - File contents
@@ -240,6 +247,7 @@ obj = {
 				}
 				/**
 				 * Check if a file is loaded.
+				 * @memberof FS
 				 * @param {string} f - Name of the file
 				 * @returns {boolean} Whether the file is loaded
 				 */
@@ -248,6 +256,7 @@ obj = {
 				}
 				/**
 				 * Check if a file exists, given the header is loaded.
+				 * @memberof FS
 				 * @param {string} f - Name of the file
 				 * @returns {boolean} Whether the file exists
 				 */

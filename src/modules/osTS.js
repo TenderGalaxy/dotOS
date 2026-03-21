@@ -10,6 +10,9 @@ obj = {
 	},
 	callbacks: {
 		onLoad() {
+			/**
+			 * @namespace TS
+			 */
 			globalThis.TS = {
 				work: {},
 				stack: [],
@@ -28,6 +31,7 @@ obj = {
 				},
 				/**
 				 * Schedule a function to execute at the first unused tick
+				 * @memberof TS
 				 * @param {function} action - Function
 				 * @param  {...any} args - Arguments
 				 */
@@ -37,6 +41,7 @@ obj = {
 				},
 				/**
 				 * Schedule a function to happen next tick
+				 * @memberof TS
 				 * @param {function} action - Function
 				 * @param  {...any} args - Arguments
 				 */
@@ -49,6 +54,7 @@ obj = {
 				},
 				/**
 				 * Set a function to happen n ticks later.
+				 * @memberof TS
 				 * @param {*} action - Function
 				 * @param {*} delay - Delay in 50-millisecond ticks
 				 * @param  {...any} args - Arguments

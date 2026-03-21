@@ -16,8 +16,10 @@ obj = {
 		requirements: []
 	},
 	callbacks: {
-
 		onLoad() {
+			/**
+			 * @class
+			 */
 			globalThis.Thread = class {
 				constructor(func) {
 					this.task = func()

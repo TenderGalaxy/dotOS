@@ -11,6 +11,7 @@ obj = {
 			globalThis.asyncFS = class extends disk {
 				/**
 				 * Load a file, and then get the contents
+				 * @memberof FS
 				 * @param {string} f - File
 				 * @returns - File contents
 				 */
@@ -21,6 +22,7 @@ obj = {
 				}
 				/**
 				 * Load a file and set it
+				 * @memberof FS
 				 * @param {string} f - File
 				 * @param {string} c - Contents
 				 */
@@ -31,6 +33,7 @@ obj = {
 				}
 				/**
 				 * Create a file without needing to load it
+				 * @memberof FS
 				 * @param {*} p - Parent directory
 				 * @param {*} n - File
 				 * @param {*} c - Contents
@@ -47,6 +50,7 @@ obj = {
 				}
 				/**
 				 * Load a file
+				 * @memberof FS
 				 * @param {string} f - File
 				 */
 				*loadFile(f) {
@@ -54,6 +58,7 @@ obj = {
 				}
 				/**
 				 * Set a file whether or not it exists.
+				 * @memberof FS
 				 * @param {string} p - Parent directory
 				 * @param {string} n - File name
 				 * @param {string} c - Contents
@@ -69,6 +74,7 @@ obj = {
 				}
 				/**
 				 * Set a file if it doesn't exist.
+				 * @memberof FS
 				 * @param {string} p - Parent directory
 				 * @param {string} n - File name
 				 * @param {string} c -
