@@ -1,41 +1,55 @@
-obj = {
-	info: {
-		name: 'display',
-		type: 'os',
-		version: '1.0.0',
-		source: 'github.com/tendergalaxy/dotOS/blob/main/src/modules/display.js',
-		requirements: ['FS-async', 'async', 'data', 'bigArray']
-	},
-	callbacks: {
-		onLoad(){
-			initDisplay = function*(){
-        dispFiles = new Thread(function*(){
-          yield* threadLibs.waitUntil(() => mountDrive.threads.files.isIdle())
-          let m = yield* JSON.loadFile('dotOS/data/colors.json')
-          m.hex.map(function(v){
-            let a = v[1] + v[2]
-            let b = v[3] + v[4]
-            let c = v[4] + v[5]
-            return Number('0x' + a), Number('0x' + b), Number('0x' + c)
-          })
-          globalThis.dotOS.htmlColors = {hex: new BigArray(m.hex), names: new BigArray(m.names)}
-          m = null
-          return
-        })
-        yield threadLibs.waitUntil(() => dispFiles.isIdle())
-				globalThis.Display = new class {
-					constructor(res = [285, 125], colors){
-						this.buffer = new BigArray(Array(res[0] * res[1]).fill(0))
-						this.res = res
-						this.colors = colors
-					}
+export default {
+    info: {
+        name: 'display',
+        type: 'os',
+        version: '1.0.0',
+        source: 'github.com/tendergalaxy/dotOS/blob/main/src/modules/display.js',
+        requirements: ['FS-async', 'async', 'data', 'bigArray']
+    },
+    onLoad() {
+        initDisplay = new Thread(function* () {
+            dispFiles = new Thread(function* () {
+                yield* threadLibs.waitUntil(() => mountDrive.threads.files.isIdle())
+                dotOS.htmlColors = yield* loadJSONFile('dotOS/data/colors.json')
+                api.log('display: Processing hex codes...')
+                dotOS.htmlColors.hex.map(function (v) {
+                    let a = v[1] + v[2]
+                    let b = v[3] + v[4]
+                    let c = v[4] + v[5]
+                    return [Number('0x' + a), Number('0x' + b), Number('0x' + c)]
+                })
+                api.log('display: dotOS HTML Colors loaded!')
+                return
+            })
+            yield threadLibs.waitUntil(() => dispFiles.isIdle())
+            /**
+             * @namespace Display
+             */
+            globalThis.Display = new class {
+                /**
+                 * @memberof Display
+                 * @param {number[]} res - Resolution, defaults to 285x125
+                 * @param {{hex: number[][], names: string[]}} colors - An object of colors
+                 */
+                constructor(res = [285, 125], colors) {
+                    this.buffer = new BigArray(Array(res[0] * res[1]).fill(0))
+                    this.res = res
+                    this.colors = colors
+                    this.nameToHex = Object.fromEntries(
+                        this.colors.names.map((key, idx) => [key, this.colors.hex[idx]])
+                    )
+                    this.hexToName = Object.fromEntries(
+                        this.colors.names.map((key, idx) => [key, this.colors.hex[idx]])
+                    )
+                    this.colors = new BigArray(this.colors)
+                }
 
-				}
-        return
-				//globalThis.display = new Display(285, 125, dotOS.htmlColors) will add back in later
-			}
-		}
-	}
+            }
+            globalThis.display = new Display(285, 125, dotOS.htmlColors)
+            delete dotOS.htmlColors
+        })
+    },
+    callbacks: {}
 }
 /*
 // ScreenRenderer for Bloxd.io

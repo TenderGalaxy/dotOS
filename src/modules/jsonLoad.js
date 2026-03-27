@@ -1,4 +1,4 @@
-obj = {
+export default {
 	info: {
 		name: 'jsonLoad',
 		type: 'os',
@@ -6,13 +6,12 @@ obj = {
 		source: 'github.com/tendergalaxy/dotOS/blob/main/src/modules/jsonLoad.js',
 		requirements: ['FS-async']
 	},
-	callbacks: {
-		onLoad() {
-			globalThis.JSON.loadFile = function* (f) {
-				let v = yield* FS.getFileAsync(f)
-				return JSON.parse(v)
-			}
+	onLoad() {
+		globalThis.loadJSONFile = function* (f) {
+			let v = yield* FS.getFileAsync(f)
+			return JSON.parse(v)
 		}
+	},
+	callbacks: {
 	}
 }
-obj

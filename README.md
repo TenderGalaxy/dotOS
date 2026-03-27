@@ -11,3 +11,6 @@ git clone https://github.com/TenderGalaxy/dotOS
 ```bash
 ./dotOS/pull.sh
 ```
+
+## Info
+The code is JSDoc-ifiable.

@@ -8,11 +8,7 @@ if [ "$1" = "-u" ]; then
   }
 fi
 echo "Building dotOS..."
-pip install -r requirements.txt || {
-  echo "Install python!"
-  exit
-}
-python3 build.py || {
-  echo "Wtf you installed pip but not python?"
+node build.cjs || {
+  echo "Ooopsie Daisie!"
   exit
 }

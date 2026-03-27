@@ -1,4 +1,4 @@
-obj = {
+export default {
 	info: {
 		name: 'CFF',
 		type: 'os',
@@ -6,13 +6,12 @@ obj = {
 		source: 'github.com/fenlAtSchool/dotOS/blob/main/src/modules/CFF.js',
 		requirements: ['jsonLoad', 'FS-async', 'async']
 	},
-	callbacks: {
-		onLoad() {
-			globalThis.CFF = class {
-				constructor() { }
-				setModule() { }
-			}
+	onLoad() {
+		globalThis.CFF = class {
+			constructor() { }
+			setModule() { }
 		}
+	},
+	callbacks: {
 	}
 }
-obj
