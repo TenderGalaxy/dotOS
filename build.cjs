@@ -67,15 +67,22 @@ async function main() {
     let cbuild = code.callbacks.map(function(a){
         return `dotOS.callbacks.${a.call}.push(function(){${a.val}})`
     }).join('\n')
-    await fs.writeFile('./build/worldcode.js', 'dotOS = {}\n' + world.funcs.join('\n') + '\n' + wbuild)
-    await fs.writeFile('./build/codeblock.js', code.funcs.join('\n') + '\n' + cbuild)
+
+    let worldContents =  'dotOS = {}\n' + world.funcs.join('\n') + '\n' + wbuild
+    let codeContents = code.funcs.join('\n') + '\n' + cbuild
+    await fs.writeFile('./build/worldcode.cjs', worldContents)
+    await fs.writeFile('./build/codeblock.cjs', codeContents)
 
     let data = await fs.readdir('./src/data/')
-    file = 'toUpload = []\n'
+    let dataContents = 'toUpload = []\n'
     for(let i of data){
         let contents = await fs.readFile('./src/data/' + i)
-        file += `toUpload.push({name: '${i}', contents: JSON.stringify(${contents})})\n`
+        dataContents += `toUpload.push({name: '${i}', contents: JSON.stringify(${contents})})\n`
     }
-    await fs.writeFile('./build/files.js', file)
+    await fs.writeFile('./build/files.cjs', dataContents)
+    let header = await import('./src/header.js')
+    header = header.default.func.toString()
+    header = header.slice(header.indexOf('{') + 1, header.lastIndexOf('}'))
+    await fs.writeFile('./build/TEST_unified.cjs', header + '\n' + worldContents + '\n' + dataContents + '\n' + codeContents)
 }
 main()

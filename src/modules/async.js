@@ -27,15 +27,15 @@ export default {
 				TS.scheduleFirstUnused(() => (this.tick()))
 			}
 			tick() {
+				if (!this.idle) {
+					TS.scheduleFirstUnused(() => (this.tick()))
+				}
 				let value = dotError.tryFunction(() => this.task.next()) || {done: false}
 				if(dotError.hasError()){
 					api.log(`${this.name}: Error!`)
 					dotError.log()
 				}
 				if (value.done) this.idle = true
-				if (!this.idle) {
-					return TS.scheduleFirstUnused(() => (this.tick()))
-				}
 			}
 			/**
 			 * Check if a thread is idle

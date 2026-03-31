@@ -57,7 +57,7 @@ export default {
 						if (l.name == 'onLoad') {
 							l()
 						} else {
-							dotOS.callbacks[i].push(() => l())
+							dotOS.callbacks[k].push(() => l())
 						}
 					}
 				}
