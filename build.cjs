@@ -67,9 +67,22 @@ async function main() {
     let cbuild = code.callbacks.map(function(a){
         return `dotOS.callbacks.${a.call}.push(function(){${a.val}})`
     }).join('\n')
-
-    let worldContents =  'dotOS = {}\n' + world.funcs.join('\n') + '\n' + wbuild
-    let codeContents = code.funcs.join('\n') + '\n' + cbuild
+    const notice = `
+/*
+    * Notice
+    * DotOS - a faux-operating-system for Bloxd
+    * by fenll/tendergalaxy (2026)
+    * 
+    * Licensed under the GNU General Public License V3
+    * This means that if you change this project and make your own off of this code,
+    * you have to also make your code licensed by GNU GPL V3!
+    * 
+    * If you use Malus or another code-copier to steal this code and not put it under GPL V3, this will make me, (fenl), very sad!
+    * Please do not delete this notice, or it will also make me very sad :(
+*/
+    `
+    let worldContents =  notice + 'dotOS = {}\n' + world.funcs.join('\n') + '\n' + wbuild
+    let codeContents = notice + code.funcs.join('\n') + '\n' + cbuild
     await fs.writeFile('./build/worldcode.cjs', worldContents)
     await fs.writeFile('./build/codeblock.cjs', codeContents)
 
