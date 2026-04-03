@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "jsdoc": "^4.0.5"
+    "jsdoc": "^4.0.5",
+    "terser": "^5.46.1"
   },
   "type": "module"
 }
