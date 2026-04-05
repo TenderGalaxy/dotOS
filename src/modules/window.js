@@ -8,7 +8,10 @@ export default {
     },
     onLoad(){
         globalThis.window = class {
-            
+            constructor(dim, pos){
+                this.dim = dim
+                this.pos = pos
+            }
         }
     },
     callbacks: {}

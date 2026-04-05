@@ -25,3 +25,9 @@ wlen=$(wc -c < "$world")
 clen=$(wc -c < "$code")
 echo "// Notice for code length: This code is $wlen chars long, excluding this notice." >> "$world"
 echo "// Notice for code length: This code is $clen chars long, excluding this notice." >> "$code"
+echo "Compressed files!"
+
+if [ "$1" = "-e" ]; then
+  echo "Running..."
+  node tests/main.cjs
+fi

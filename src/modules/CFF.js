@@ -7,9 +7,12 @@ export default {
 		requirements: ['jsonLoad', 'FS-async', 'async']
 	},
 	onLoad() {
-		globalThis.CFF = class {
-			constructor() { }
-			setModule() { }
+		globalThis.execFile = function*(f){
+			const file = yield* FS.getFileAsync(f)
+			const extension = f.split('.').at(-1)
+			const data = {fName: f, fContents: file}
+			const form = FS.getFileAsync(`src/data/dotOS-ext-${extension}.js`)
+			return (new Function*('data', form))(data)
 		}
 	},
 	callbacks: {

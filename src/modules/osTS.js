@@ -35,8 +35,10 @@ export default {
 			 * @param  {...any} args - Arguments
 			 */
 			scheduleFirstUnused(action, ...args) {
-				TS.lastUsedTick = Math.max(TS.lastUsedTick, TS.tick + 1) + 1
+				api.log(Object.keys(TS.work))
+				TS.lastUsedTick = Math.max(TS.lastUsedTick, TS.tick) + 1
 				TS.work[TS.lastUsedTick] = [TS.makeAction(action, ...args)]
+				return TS.lastUsedTick
 			},
 			/**
 			 * Schedule a function to happen next tick

@@ -20,10 +20,11 @@ export default {
 		 * @class
 		 */
 		globalThis.Thread = class {
-			constructor(func, name) {
-				this.task = func()
+			constructor(func, name, ...args) {
+				this.task = func(...args)
 				this.idle = false
 				this.name = name || 'thread'
+				this.endValue = 0
 				TS.scheduleFirstUnused(() => (this.tick()))
 			}
 			tick() {
@@ -35,7 +36,10 @@ export default {
 					api.log(`${this.name}: Error!`)
 					dotError.log()
 				}
-				if (value.done) this.idle = true
+				if(value.done){
+					this.idle = true
+					this.endValue = value.value
+				}
 			}
 			/**
 			 * Check if a thread is idle

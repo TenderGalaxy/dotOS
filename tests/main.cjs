@@ -12,7 +12,7 @@ async function main() {
 	eval(files)
 	const codeBlock = await fs.readFile(path.join(__dirname, '..', 'build/codeblock.cjs'), { encoding: 'utf8' })
 	eval(codeBlock)
-	const interval = setInterval(tick, 50)
+	const interval = setInterval(() => { tick() }, 50)
 }
 main()
-// ctrl + c
+// ctrl + c	
