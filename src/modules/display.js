@@ -1,409 +1,105 @@
 export default {
-    info: {
-        name: 'display',
-        type: 'os',
-        version: '1.0.0',
-        source: 'github.com/tendergalaxy/dotOS/blob/main/src/modules/display.js',
-        requirements: ['FS-async', 'async', 'data', 'bigArray']
-    },
-    onLoad() {
-        initDisplay = new Thread(function* () {
-            /**
-             * @namespace Display
-             */
-            globalThis.Display = class {
-                hasChanged = false
-                width = 0.05
-                height = 0.05
-                partition = 8
-                row = 128
-                /**
-                 * @memberof Display
-                 * @param {number[]} res - Resolution, defaults to 256x128
-                 */
-                constructor(res) {
-                    this.res = res || [256, 128]
-                    this.buffer = new Uint8Array(this.res[0] * this.res[1])
-                    this.buffer.fill(137)
-                    this.pixels = new Proxy(this.buffer, {
-                        set: (t, i, v) => (t[i] = v, this.hasChanged = true)
-                    })
-                }
-                _drawRow(){
-                    const pos = [0,3,0]
-                    const part = this.res[0]/this.partition
-                    for(let j = 0; j < this.partition; j++){
-                        const id = `dotOS_display_row${this.row}_rev${j}`
-                        const off = this.row * this.res[0]
-                        let row = Array(part)
-                        for(let x = 0; x < part; x++){
-                            row[x] = {
-                                str: '█',
-                                style: {
-                                    color: this.colors.names[this.buffer[off + x + (part * j)]]
-                                }
-                            }
-                        }
-                        const npos = [
-                            pos[0] + ((j - (this.partition/2)) * part * this.width),
-                            pos[1] + ((this.res[1] - this.row) * this.height),
-                            pos[2]
-                        ]
-                        api.setDirectionArrow(
-                            dotOS.user.id,
-                            id,
-                            npos,
-                            row,
-                            false,
-                            {
-                                color: 'black',
-                                fontSize: '3px'
-                            }
-                        )
-                    }
-                    this.row++
-                }
-                _spamDraw(){
-                    if(this.row < this.res[1]){
-                        TS.setTimeout(() => this._spamDraw(), 1)
-                    }
-                    while(this.row < this.res[1]){
-                        this._drawRow()
-                    }
-                }
-                drawDisplay() {
-                    this.row = 0
-                    this._spamDraw()
-                }
-                clearDisplay() {
-					for(let i = 0; i < this.res[1]; i++){
-						for(let j = 0; j < this.partition; j++){
+	info: {
+		name: 'display',
+		type: 'os',
+		version: '1.0.0',
+		source: 'github.com/tendergalaxy/dotOS/blob/main/src/modules/display.js',
+		requirements: ['FS-async', 'async', 'data', 'bigArray','jsonLoad']
+	},
+	onLoad() {
+		initDisplay = new Thread(function* () {
+			/**
+			 * @namespace Display
+			 */
+			globalThis.Display = class {
+				hasChanged = false
+				width = 0.05
+				height = 0.05
+				partition = 8
+				row = 128
+				/**
+				 * @memberof Display
+				 * @param {number[]} res - Resolution, defaults to 256x128
+				 */
+				constructor(res) {
+					this.res = res || [256, 128]
+					this.buffer = new Uint8Array(this.res[0] * this.res[1])
+					this.buffer.fill(137)
+					this.pixels = new Proxy(this.buffer, {
+						set: (t, i, v) => (t[i] = v, this.hasChanged = true)
+					})
+				}
+				_drawRow() {
+					const pos = [0, 3, 0]
+					const part = this.res[0] / this.partition
+					for (let j = 0; j < this.partition; j++) {
+						const id = `dotOS_display_row${this.row}_rev${j}`
+						const off = this.row * this.res[0]
+						let row = Array(part)
+						for (let x = 0; x < part; x++) {
+							row[x] = {
+								str: '█',
+								style: {
+									color: this.colors.names[this.buffer[off + x + (part * j)]]
+								}
+							}
+						}
+						const npos = [
+							pos[0] + ((j - (this.partition / 2)) * part * this.width),
+							pos[1] + ((this.res[1] - this.row) * this.height),
+							pos[2]
+						]
+						api.setDirectionArrow(
+							dotOS.user.id,
+							id,
+							npos,
+							row,
+							false,
+							{
+								color: 'black',
+								fontSize: '3px'
+							}
+						)
+					}
+					this.row++
+				}
+				_spamDraw() {
+					if (this.row < this.res[1]) {
+						TS.setTimeout(() => this._spamDraw(), 1)
+					}
+					while (this.row < this.res[1]) {
+						this._drawRow()
+					}
+				}
+				drawDisplay() {
+					this.row = 0
+					this._spamDraw()
+				}
+				clearDisplay() {
+					for (let i = 0; i < this.res[1]; i++) {
+						for (let j = 0; j < this.partition; j++) {
 							api.clearDirectionArrow(dotOS.user.id, `dotOS_display_row${this.row}_rev${j}`)
 						}
 					}
 				}
-                isIdle(){
-                    return this.row == this.res[1]
-                }
-                /*
-    _renderRow(y) {
-    const rowOffset = y * this.width;
-    
-    for (let x = 0; x < this.width; x++) {
-      this.rowBuilder[x] = this.palette[this.buffer[rowOffset + x]];
-    }
-    const rowString = this.rowBuilder.join("");
-    const visualIndex = (this.height - 1 - y);
-    
-    const pos = [
-      this.screenPos[0],
-      this.screenPos[1] + (visualIndex * this.pixelStep),
-      this.screenPos[2]
-    ];
-
-    api.setDirectionArrow(
-      this.playerId,
-      `${this.screenId}_${visualIndex}`, 
-      pos,
-      rowString,
-      false, 
-      { 
-        color: "black",
-        fontSize: "4px" 
-      }
-    );
-  }
-    */
-            }
-            globalThis.display = new Display()
-            api.log('display: dotOS Display loaded!')
-
-            yield* threadLibs.waitUntil(() => !globalThis.driveMounting)
-            display.colors = yield* loadJSONFile('dotOS/data/colors.json')
-            api.log('display: Processing hex codes...')
-            display.colors.hex = display.colors.hex.map(function (v) {
-                let a = v[1] + v[2]
-                let b = v[3] + v[4]
-                let c = v[4] + v[5]
-                return [Number('0x' + a), Number('0x' + b), Number('0x' + c)]
-            })
-            api.log('display: dotOS HTML Colors loaded!')
-        }, 'initDisplay')
-    },
-    callbacks: {}
+				isIdle() {
+					return this.row == this.res[1]
+				}
+			}
+			globalThis.display = new Display()
+			api.log('display: dotOS Display loaded!')
+			yield* threadLibs.waitUntil(globalThis.driveMounting.thread.isIdle)
+			display.colors = yield* FS.getFileAsync('dotOS/data/colors.json')
+			display.colors = JSON.parse(display.colors)
+			api.log('display: Processing hex codes...')
+			display.colors.hex = display.colors.hex.map(function (v) {
+				let a = v[1] + v[2]
+				let b = v[3] + v[4]
+				let c = v[4] + v[5]
+				return [Number('0x' + a), Number('0x' + b), Number('0x' + c)]
+			})
+			api.log('display: dotOS HTML Colors loaded!')
+		}, 'initDisplay')
+	},
+	callbacks: {}
 }
-/*
-// ScreenRenderer for Bloxd.io
-// Copyright (c) 2026 the_ccccc
-// Licensed under the BSD 3-Clause License.
-
-globalThis.activeScreens = new Map();
-
-function deleteScreen(screenId) {
-  const screen = globalThis.activeScreens.get(screenId);
-  if (screen) screen.delete();
-}
-
-class Screen {
-  constructor(playerId, screenId, screenPos, options = "default", alwaysRender = false) {
-    this.playerId = playerId;
-    this.screenId = screenId;
-    this.screenPos = screenPos;
-
-    let opts = {};
-    if (options === "default") {
-      opts = { 
-        colorMap: { red: "🟥", orange: "🟧", yellow: "🟨", green: "🟩", blue: "🟦", purple: "🟪", brown: "🟫", black: "⬛", white: "⬜" } 
-      };
-    } else if (options === "bw") {
-      opts = { colorMap: { black: "⬛", white: "⬜" } };
-    } else if (typeof options === "object") {
-      opts = options;
-    }
-
-    this.width = opts.width || 285;
-    this.height = opts.height || 125;
-    this.alwaysRender = opts.alwaysRender || alwaysRender;
-    this.pixelStep = 0.03;
-    this.batchSize = 10;
-
-    this.palette = [];
-    this.colorToIndex = {};
-    const cMap = opts.colorMap || { black: "⬛", white: "⬜" };
-
-    // Ensure black and white always exist so `0` and `1` defaults work
-    if (!("black" in cMap)) cMap.black = "⬛";
-    if (!("white" in cMap)) cMap.white = "⬜";
-
-    let idx = 0;
-    for (const [name, symbol] of Object.entries(cMap)) {
-      this.palette.push(symbol);
-      this.colorToIndex[name] = idx;
-      idx++;
-    }
-
-    this.colorToIndex[0] = this.colorToIndex["black"];
-    this.colorToIndex[1] = this.colorToIndex["white"];
-
-    this.fallbackIndex = this.colorToIndex["black"];
-
-    this.buffer = new Uint8Array(this.width * this.height);
-    this.buffer.fill(this.fallbackIndex); // Fill default with Black
-    this.rowBuilder = new Array(this.width);
-
-    this.renderPointer = 0;
-    this.isRendering = false;
-
-    globalThis.activeScreens.set(this.screenId, this);
-  }
-
-  _getColorIndex(color) {
-    const idx = this.colorToIndex[color];
-    return idx !== undefined ? idx : this.fallbackIndex; // Fallback to black if not found
-  }
-
-  fill(color) {
-    this.buffer.fill(this._getColorIndex(color));
-    if (this.alwaysRender) this.render();
-  }
-
-  setPixel(x, y, color) {
-    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
-      this.buffer[y * this.width + x] = this._getColorIndex(color);
-    }
-    if (this.alwaysRender) this.render();
-  }
-
-  drawText(text, x, y, offset = 0, color = "white") {
-    const colorIdx = this._getColorIndex(color);
-    let cursorX = x;
-
-    for (let i = 0; i < text.length; i++) {
-      const char = text[i];
-      const bitmap = font8x8[char] || font8x8['?'];
-
-      for (let row = 0; row < 8; row++) {
-        const lineByte = bitmap[row];
-        for (let col = 0; col < 8; col++) {
-          if (lineByte & (1 << (7 - col))) {
-            const pixelX = cursorX + col;
-            const pixelY = y + row;
-            // Directly modify buffer rather than calling setPixel to avoid lag via this.alwaysRender spam
-            if (pixelX >= 0 && pixelX < this.width && pixelY >= 0 && pixelY < this.height) {
-              this.buffer[pixelY * this.width + pixelX] = colorIdx;
-            }
-          }
-        }
-      }
-      cursorX += (8 + offset);
-    }
-    
-    if (this.alwaysRender) this.render();
-  }
-
-  render() {
-    this.renderPointer = 0;
-    this.isRendering = true;
-  }
-
-  onTick() {
-    if (!this.isRendering) return;
-
-    let processedCount = 0;
-    while (processedCount < this.batchSize && this.renderPointer < this.height) {
-      this._renderRow(this.renderPointer);
-      this.renderPointer++;
-      processedCount++;
-    }
-
-    if (this.renderPointer >= this.height) {
-      this.isRendering = false;
-    }
-  }
-
-  delete() {
-    this.isRendering = false;
-    for (let y = 0; y < this.height; y++) {
-      const visualIndex = (this.height - 1 - y);
-      const arrowId = `${this.screenId}_${visualIndex}`;
-      api.clearDirectionArrow(this.playerId, arrowId);
-    }
-    globalThis.activeScreens.delete(this.screenId);
-  }
-
-  _renderRow(y) {
-    const rowOffset = y * this.width;
-    
-    for (let x = 0; x < this.width; x++) {
-      this.rowBuilder[x] = this.palette[this.buffer[rowOffset + x]];
-    }
-    const rowString = this.rowBuilder.join("");
-    const visualIndex = (this.height - 1 - y);
-    
-    const pos = [
-      this.screenPos[0],
-      this.screenPos[1] + (visualIndex * this.pixelStep),
-      this.screenPos[2]
-    ];
-
-    api.setDirectionArrow(
-      this.playerId,
-      `${this.screenId}_${visualIndex}`, 
-      pos,
-      rowString,
-      false, 
-      { 
-        color: "black",
-        fontSize: "4px" 
-      }
-    );
-  }
-}
-
-function tick() {
-  for (const screen of globalThis.activeScreens.values()) {
-    screen.onTick();
-  }
-}
-
-const font8x8 = {
-  '0': [0x3C,0x42,0x42,0x42,0x42,0x42,0x42,0x3C],
-  '1': [0x10,0x30,0x50,0x10,0x10,0x10,0x10,0x7C],
-  '2': [0x3C,0x42,0x02,0x04,0x08,0x10,0x20,0x7E],
-  '3': [0x3C,0x42,0x02,0x1C,0x02,0x02,0x42,0x3C],
-  '4': [0x08,0x18,0x28,0x48,0x7E,0x08,0x08,0x08],
-  '5': [0x7E,0x40,0x40,0x7C,0x02,0x02,0x42,0x3C],
-  '6': [0x3C,0x40,0x40,0x7C,0x42,0x42,0x42,0x3C],
-  '7': [0x7E,0x02,0x04,0x08,0x10,0x10,0x10,0x10],
-  '8': [0x3C,0x42,0x42,0x3C,0x42,0x42,0x42,0x3C],
-  '9': [0x3C,0x42,0x42,0x3E,0x02,0x02,0x40,0x3C],
-
-  'A': [0x18,0x3C,0x66,0x66,0x7E,0x66,0x66,0x66],
-  'B': [0x7C,0x66,0x66,0x7C,0x66,0x66,0x66,0x7C],
-  'C': [0x3C,0x66,0x60,0x60,0x60,0x60,0x66,0x3C],
-  'D': [0x78,0x6C,0x66,0x66,0x66,0x66,0x6C,0x78],
-  'E': [0x7E,0x60,0x60,0x78,0x60,0x60,0x60,0x7E],
-  'F': [0x7E,0x60,0x60,0x78,0x60,0x60,0x60,0x60],
-  'G': [0x3C,0x66,0x60,0x60,0x6E,0x66,0x66,0x3C],
-  'H': [0x66,0x66,0x66,0x7E,0x66,0x66,0x66,0x66],
-  'I': [0x3C,0x18,0x18,0x18,0x18,0x18,0x18,0x3C],
-  'J': [0x06,0x06,0x06,0x06,0x06,0x66,0x66,0x3C],
-  'K': [0x66,0x6C,0x78,0x70,0x78,0x6C,0x66,0x66],
-  'L': [0x60,0x60,0x60,0x60,0x60,0x60,0x60,0x7E],
-  'M': [0x63,0x77,0x7F,0x6B,0x63,0x63,0x63,0x63],
-  'N': [0x63,0x63,0x63,0x73,0x7B,0x6F,0x67,0x63],
-  'O': [0x3C,0x66,0x66,0x66,0x66,0x66,0x66,0x3C],
-  'P': [0x7C,0x66,0x66,0x7C,0x60,0x60,0x60,0x60],
-  'Q': [0x3C,0x66,0x66,0x66,0x66,0x6A,0x6C,0x36],
-  'R': [0x7C,0x66,0x66,0x7C,0x78,0x6C,0x66,0x66],
-  'S': [0x3C,0x66,0x60,0x3C,0x06,0x06,0x66,0x3C],
-  'T': [0x7E,0x7E,0x18,0x18,0x18,0x18,0x18,0x18],
-  'U': [0x66,0x66,0x66,0x66,0x66,0x66,0x66,0x3C],
-  'V': [0x66,0x66,0x66,0x66,0x66,0x66,0x3C,0x18],
-  'W': [0x63,0x63,0x63,0x6B,0x7F,0x77,0x63,0x63],
-  'X': [0x66,0x66,0x3C,0x18,0x3C,0x66,0x66,0x66],
-  'Y': [0x66,0x66,0x66,0x3C,0x18,0x18,0x18,0x18],
-  'Z': [0x7E,0x06,0x0C,0x18,0x30,0x60,0xC0,0x7E],
-
-  'a': [0x00,0x00,0x3C,0x02,0x3E,0x46,0x46,0x3A],
-  'b': [0x60,0x60,0x5C,0x62,0x62,0x62,0x62,0x5C],
-  'c': [0x00,0x00,0x3C,0x42,0x60,0x60,0x42,0x3C],
-  'd': [0x02,0x02,0x3A,0x46,0x46,0x46,0x46,0x3A],
-  'e': [0x00,0x00,0x3C,0x42,0x7E,0x60,0x42,0x3C],
-  'f': [0x0C,0x12,0x10,0x3E,0x10,0x10,0x10,0x10],
-  'g': [0x00,0x00,0x00,0x3C,0x40,0x4E,0x42,0x3C],
-  'h': [0x60,0x60,0x5C,0x62,0x62,0x62,0x62,0x62],
-  'i': [0x18,0x00,0x38,0x18,0x18,0x18,0x18,0x3C],
-  'j': [0x06,0x00,0x06,0x06,0x06,0x06,0x66,0x3C],
-  'k': [0x60,0x60,0x64,0x68,0x70,0x68,0x64,0x62],
-  'l': [0x38,0x18,0x18,0x18,0x18,0x18,0x18,0x3C],
-  'm': [0x00,0x00,0x66,0x7F,0x7F,0x6B,0x63,0x63],
-  'n': [0x00,0x00,0x5C,0x62,0x62,0x62,0x62,0x62],
-  'o': [0x00,0x00,0x3C,0x42,0x42,0x42,0x42,0x3C],
-  'p': [0x00,0x00,0x78,0x44,0x44,0x78,0x40,0x40],
-  'q': [0x00,0x00,0x00,0x3C,0x42,0x42,0x4A,0x3D],
-  'r': [0x00,0x00,0x5C,0x62,0x60,0x60,0x60,0x60],
-  's': [0x00,0x00,0x3C,0x60,0x3C,0x06,0x06,0x3C],
-  't': [0x10,0x10,0x3E,0x10,0x10,0x10,0x14,0x18],
-  'u': [0x00,0x00,0x42,0x42,0x42,0x42,0x46,0x3A],
-  'v': [0x00,0x00,0x42,0x42,0x42,0x42,0x24,0x18],
-  'w': [0x00,0x00,0x42,0x42,0x5A,0x5A,0x66,0x66],
-  'x': [0x00,0x00,0x42,0x24,0x18,0x18,0x24,0x42],
-  'y': [0x00,0x00,0x42,0x42,0x42,0x3A,0x04,0x38],
-  'z': [0x00,0x00,0x7E,0x04,0x08,0x10,0x20,0x7E],
-
-  ' ': [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00],
-  '!': [0x18,0x18,0x18,0x18,0x18,0x00,0x18,0x00],
-  '"': [0x66,0x66,0x00,0x00,0x00,0x00,0x00,0x00],
-  '#': [0x24,0x24,0x7E,0x24,0x24,0x7E,0x24,0x24],
-  '$': [0x18,0x3C,0x58,0x38,0x1C,0x1A,0x3C,0x18],
-  '%': [0x60,0x66,0x0C,0x18,0x30,0x66,0x06,0x00],
-  '&': [0x3C,0x66,0x38,0x60,0x69,0x66,0x3C,0x00],
-  '\'':[0x18,0x18,0x08,0x00,0x00,0x00,0x00,0x00],
-  '(': [0x0C,0x18,0x30,0x30,0x30,0x30,0x18,0x0C],
-  ')': [0x30,0x18,0x0C,0x0C,0x0C,0x0C,0x18,0x30],
-  '*': [0x00,0x66,0x3C,0xFF,0x3C,0x66,0x00,0x00],
-  '+': [0x00,0x18,0x18,0x7E,0x18,0x18,0x00,0x00],
-  ',': [0x00,0x00,0x00,0x00,0x00,0x00,0x18,0x30],
-  '-': [0x00,0x00,0x00,0x7E,0x00,0x00,0x00,0x00],
-  '.': [0x00,0x00,0x00,0x00,0x00,0x00,0x18,0x18],
-  '/': [0x00,0x02,0x04,0x08,0x10,0x20,0x40,0x00],
-  ':': [0x00,0x00,0x18,0x18,0x00,0x18,0x18,0x00],
-  ';': [0x00,0x00,0x18,0x18,0x00,0x18,0x18,0x30],
-  '<': [0x06,0x18,0x60,0x60,0x60,0x18,0x06,0x00],
-  '=': [0x00,0x00,0x7E,0x00,0x00,0x7E,0x00,0x00],
-  '>': [0x60,0x18,0x06,0x06,0x06,0x18,0x60,0x00],
-  '?': [0x3C,0x66,0x06,0x0C,0x18,0x00,0x18,0x00],
-  '@': [0x3C,0x42,0x9A,0xAA,0xAA,0x9E,0x40,0x3C],
-  '[': [0x1E,0x18,0x18,0x18,0x18,0x18,0x18,0x1E],
-  '\\':[0x00,0x40,0x20,0x10,0x08,0x04,0x02,0x00],
-  ']': [0x78,0x18,0x18,0x18,0x18,0x18,0x18,0x78],
-  '^': [0x08,0x1C,0x36,0x63,0x00,0x00,0x00,0x00],
-  '_': [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF],
-  '{': [0x0C,0x18,0x18,0x30,0x18,0x18,0x0C,0x00],
-  '|': [0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18],
-  '}': [0x30,0x18,0x18,0x0C,0x18,0x18,0x30,0x00],
-  '~': [0x00,0x76,0xDC,0x00,0x00,0x00,0x00,0x00]
-};
-
-*/

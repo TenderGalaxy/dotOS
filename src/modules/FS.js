@@ -157,7 +157,7 @@ export default {
 			getFChapter(f, chapter) {
 				return Array.from(api.getStandardChestItems([...f, chapter]), function (a) {
 					let v = a?.attributes?.customDescription
-					return v ? v : ''
+					return v || ''
 				})
 			}
 			setFSlot(f, chapter, idx, n) {
