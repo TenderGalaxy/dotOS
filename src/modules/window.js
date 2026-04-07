@@ -34,6 +34,11 @@ export default {
                 }
             }
         }
+        api.log('Initialized Windows!')
+        globalThis.windowIs = new Thread(function*(){
+            yield* loadJSONFile('dotOS/data/font.json')
+            yield
+        })
     },
     callbacks: {}
 }
