@@ -124,10 +124,12 @@ export default {
 			_addFileToDir(dir, name) {
 				let l = JSON.parse(this._getFile(dir))
 				name = {hash: this.hash.hashStr(name), name: name}
-				if(l.every(v => v.hash != name.hash)){
+				/*if(l.every(v => v.hash != name.hash)){
 					l.push(name)
 					this._setFile(dir, JSON.stringify(l))
-				}
+				}*/
+				l.push(name)
+				this._setFile(dir, JSON.stringify(l))
 			}
 			_removeFileFromDir(dir, name) {
 				name = {hash: this.hash.hashStr(name), name: name}

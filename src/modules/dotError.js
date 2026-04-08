@@ -7,8 +7,17 @@ export default {
 		requirements: []
 	},
 	onLoad() {
+		/**
+		 * @namespace dotError
+		 */
 		class dotErr {
 			constructor() { }
+			/**
+			 * Test a string of code.
+			 * @param {string} code 
+			 * @param  {...any} args 
+			 * @returns {*|undefined} Return value of the code, or undefined if there is an error.
+			 */
 			try(code, ...args) {
 				this.point = ''
 				this.src = code.split(/[\n;]+/)
@@ -20,6 +29,13 @@ export default {
 					return undefined
 				}
 			}
+			/**
+			 * Try a function.
+			 * @memberof dotError
+			 * @param {string} code 
+			 * @param  {...any} args 
+			 * @returns {*|undefined} Return value of the code, or undefined if there is an error.
+			 */
 			tryFunction(code, ...args) {
 				this.point = ''
 				this.src = code.toString().split(/[\n;]+/)
@@ -31,6 +47,10 @@ export default {
 					return undefined
 				}
 			}
+			/**
+			 * Log an error.
+			 * @memberof dotError
+			 */
 			log() {
 				if (this.point === '') {
 					api.broadcastMessage('No Errors Found!', { color: 'red' })
@@ -42,6 +62,11 @@ export default {
 				{ str: `>| ${this.src[this.point]}\n`, style: { color: 'lightblue' } },
 				{ str: m.join('\n'), style: { color: 'orange' } }])
 			}
+			/**
+			 * Check if there was an error.
+			 * @memberof dotError
+			 * @returns {boolean} - Whether or not an error happened
+			 */
 			hasError() {
 				return this.point !== ''
 			}

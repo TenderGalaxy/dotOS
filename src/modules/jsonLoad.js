@@ -7,6 +7,10 @@ export default {
 		requirements: ['FS-async']
 	},
 	onLoad() {
+		/**
+		 * Load a JSON file
+		 * @returns {Object|Array} - The parsed JSON file
+		 */
 		globalThis.loadJSONFile = function* (f) {
 			let v = yield* FS.getFileAsync(f)
 			return JSON.parse(v)

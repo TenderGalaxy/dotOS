@@ -71,10 +71,18 @@ export default {
                         this._drawRow()
                     }
                 }
+                /**
+                 * @memberof display
+                 * Begin drawing the display
+                 */
                 drawDisplay() {
                     this.row = 0
                     this._spamDraw()
                 }
+                /**
+                 * @memberof display
+                 * Begin clearing the display
+                 */
                 clearDisplay() {
 					for(let i = 0; i < this.res[1]; i++){
 						for(let j = 0; j < this.partition; j++){
@@ -82,6 +90,10 @@ export default {
 						}
 					}
 				}
+                /**
+                 * @memberof display
+                 * @returns {boolean} - Whether or not the display renderer is idle
+                 */
                 isIdle(){
                     return this.row == this.res[1]
                 }
