@@ -7,10 +7,10 @@ export default {
 		requirements: [],
 	},
 	onLoad() {
-		class fnvHash {
-			offset = 0x811c9dc5
-			prime = 0x01000193
-			max = (1 << 18) - 1
+		class Hash {
+			constructor(seed){
+				this.seed = seed
+			}
 			hash(arr) {
 				/*
 				let v = this.offset >>> 0
@@ -21,7 +21,7 @@ export default {
 				}
 				return v
 				*/
-				let t = 2166136261
+				let t = this.seed
 				for(let i of arr){
 					t = (t + i) >>> 0
 					t = (t << 4) ^ (t << 2) ^ (t << 1) ^ t
@@ -41,103 +41,12 @@ export default {
 				return this.hash(this.strToArr(str))
 			}
 		}
-		/*globalThis.disk = class {
-			constructor(disk){
-			this.disk = disk
-			this.fileNameCache = {}
-			}
-			getFile(f){
-			if((typeof f) !== 'number'){
-				f = this.followPath(f)
-			}
-			let len = this.getFileHeader(f).length
-			let file = ''
-			for(i = 1; i <= len; i++){
-				for(let j of api.getStandardChestItems([idx, this.disk, 0])){
-				file.push(j.attributes.customDescription)
-				}
-			}
-			return JSON.parse(file)
-			}
-			getFileHeader(idx){
-			return JSON.parse(api.getStandardChestItemSlot([idx, this.disk, 0], 0))
-			}
-			setFile(file, contents){
-			if((typeof file) !== 'number'){
-				file = this.followPath(file)
-			}
-			let descs = JSON.stringify(contents.contents).match(/[^]{1,450}/g)
-			let chunks = []
-			for(let i = 0; i < descs.length; i += 36){
-				chunks.push(descs.slice(i, i + 36))
-			}
-			let len = chunks.length
-			api.setStandardChestItemSlot([file, this.disk, 0], 0, 'Net', 1, undefined, JSON.stringify({
-				name: contents.name,
-				extension: contents.extension,
-				length: len
-			}))
-			for(let i = 1; i <= len; i++){
-				TS.setTimeout(function(){
-				let f = chunks[i]
-				for(let j = 0; j < f.length; j++){
-					api.setStandardChestItemSlot([file, this.disk, i], j, 'Net', 1, undefined, {
-					customDescription: chunks[i-1][j]
-					})
-				}
-				}, i)
-			}
-			}
-			followPath(file, start = 0){
-			if((typeof x) === 'number'){
-				return x
-			}
-			if((typeof x) === 'string'){
-				x = x.split('/')
-			}
-			if(file in this.fileNameCache){
-				return this.fileNameCache[file]
-			}
-			let filesInDir;
-			for(let name of x){
-				start = FS.getFile(name).contents
-				filesInDir = start.map(m => FS.getFileHeader(m)).map(m => m.name + m.extension)
-				if(!j.includes(name)){
-				throw new Error(`InvalidFilePathError: ${name} of ${file} does not exist.`)
-				}
-				start = start[filesInDir.indexOf(name)]
-			}
-			this.fileNameCache[file] = f
-			return f
-			}
-			setFileHeader(file, header){
-			if((typeof file) == 'string'){
-				file = FS.followPath(file)
-			}
-			api.setStandardChestItemSlot([file, FS.disk, 0], 0, 'Net', 1, undefined, {
-				customDescription: JSON.stringify(header)
-			})
-			}
-		}*/
 		/**
 		 * @namespace FS
 		 */
 		globalThis.disk = class {
-			/*
-			Contents of a directory:
-			{
-				location: ['System/modules']
-				children: ['async.js', 'FS.js', ...etc]
-			}
-			*/
-			/*
-			Contents of a file:
-			Header: {
-				len: 5
-			}
-			*/
-			constructor(disk) {
-				this.hash = new fnvHash()
+			constructor(seed) {
+				this.hash = new Hash(seed)
 			}
 			_getFile(hex) {
 				let head = this._getFileHeader(hex)
@@ -247,10 +156,10 @@ export default {
 			 */
 			deleteFile(parent, name){
 				let fullName = this.hash.hashStr(parent + '/' + name)
-				let t = this._getFileHeader(fullName)
+				let t = this._getFileHeader(fullName).len
 				this._removeFileFromDir(this.hash.hashStr(parent),name)
 				for(let i = 0; i < t + 1; i++){
-					api.setBlockData(...fullName, this.disk, i, {
+					api.setBlockData([...fullName, i], {
 						persisted: {
 							chestStr: '[]'
 						}
@@ -292,7 +201,7 @@ export default {
 				return this.getFileHeader(f) ? true : false
 			}
 		}
-		globalThis.FS = new disk(69831, 'FS')
+		globalThis.FS = new disk(2, 'FS')
 	},
 	callbacks: {
 
