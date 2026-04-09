@@ -121,9 +121,10 @@ export default {
 			setFile(f, contents) {
 				this._setFile(this.hash.hashStr(f), contents)
 			}
-			_addFileToDir(dir, name) {
-				let l = JSON.parse(this._getFile(dir))
-				name = {hash: this.hash.hashStr(name), name: name}
+			addFileToDir(dir, name) {
+				let fullName = dir + '/' + name
+				let l = JSON.parse(this.getFile(dir))
+				name = {hash: this.hash.hashStr(fullName), name: name, fullName: fullName}
 				/*if(l.every(v => v.hash != name.hash)){
 					l.push(name)
 					this._setFile(dir, JSON.stringify(l))
@@ -131,11 +132,12 @@ export default {
 				l.push(name)
 				this._setFile(dir, JSON.stringify(l))
 			}
-			_removeFileFromDir(dir, name) {
-				name = {hash: this.hash.hashStr(name), name: name}
-				let l = JSON.parse(this._getFile(dir))
+			removeFileFromDir(dir, name) {
+				let fullName = dir + '/' + name
+				name = {hash: this.hash.hashStr(fullName), name: name, fullName: fullName}
+				let l = JSON.parse(this.getFile(dir))
 				l.splice(l.indexOf(name), 1)
-				this._setFile(dir, JSON.stringify(l))
+				this.setFile(dir, JSON.stringify(l))
 			}
 			/**
 			 * Create a new file as parent/name
@@ -145,9 +147,8 @@ export default {
 			 * @param {string} contents - File contents
 			 */
 			newFile(parent, name, contents) {
-				this._addFileToDir(this.hash.hashStr(parent), name)
+				this.addFileToDir(parent, name)
 				let ha = this.hash.hashStr(parent + '/' + name)
-				api.setBlock(...ha, 0, 'Chest')
 				this._setFile(ha, contents)
 			}
 			/**
@@ -157,9 +158,10 @@ export default {
 			 * @param {string} name - Individual file name
 			 */
 			deleteFile(parent, name){
-				let fullName = this.hash.hashStr(parent + '/' + name)
-				let t = this._getFileHeader(fullName).len
-				this._removeFileFromDir(this.hash.hashStr(parent),name)
+				let fullName = parent + '/' + name
+				let t = this.getFileHeader(fullName).len
+				this.removeFileFromDir(parent,name)
+				fullName = this.hash.hashStr(fullName)
 				for(let i = 0; i < t + 1; i++){
 					api.setBlockData([...fullName, i], {
 						persisted: {

@@ -36,8 +36,8 @@ export default {
         }
         api.log('Initialized Windows!')
         globalThis.windowIs = new Thread(function*(){
-            yield* threadLibs.waitUntil(() => !globalThis.driveMounting)
-            yield* loadJSONFile('dotOS/data/font.json')
+            yield* thl.require('drive')
+            font = yield* loadJSONFile('dotOS/data/font.json')
             yield
         }, 'windowIs')
     },

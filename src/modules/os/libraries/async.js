@@ -69,27 +69,61 @@ export default {
 				TS.scheduleFirstUnused(() => (this.tick()))
 			}
 		}
-		globalThis.threadLibs = {
+		/**
+		 * @namespace ThreadLibs
+		 */
+		globalThis.thl = {
+			loaded: [],
 			/**
 			 * Sleep for a given number of 50-millisecond ticks.
+			 * @memberof ThreadLibs
 			 * @param {number} ms - Ticks
 			 */
 			*sleep(ms) {
-				yield* threadLibs.sleep_internal(TS.tick + ms)
+				let targ = TS.tick + ms
+				while(TS.tick < targ){
+					yield
+				}
 			},
-			*sleep_internal(del) {
-				while (TS.tick < del) {
+			/**
+			 * Sleep for a given number of milliseconds (With Date.now())
+			 * More accurate for timekeeping than thl.sleep
+			 * @memberof ThreadLibs
+			 * @param {number} ms - Milliseconds
+			 */
+			*sleepDate(ms) {
+				let targ = Date.now() + ms
+				while (Date.now() < targ) {
 					yield
 				}
 			},
 			/**
 			 * Wait until a condition is met.
+			 * @memberof ThreadLibs
 			 * @param {function} condition - Checker (e.g () => thread2.isIdle())
 			 */
 			*waitUntil(condition) {
 				while (!(condition())) {
 					yield
 				}
+			},
+			/**
+			 * Wait until a module is loaded
+			 * @memberof ThreadLibs
+			 * @param {string} module - Module Name
+			 */
+			*require(module){
+				while(!thl.loaded.includes(module)){
+					yield
+				}
+			},
+			/**
+			 * Mark your module as loaded
+			 * @memberof ThreadLibs
+			 * @param {string} module - Module Name
+			 */
+			send(module){
+				thl.loaded.push(module)
 			}
 		}
 	},

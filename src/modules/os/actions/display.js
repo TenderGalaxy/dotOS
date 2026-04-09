@@ -18,6 +18,7 @@ export default {
                 partition = 8
                 row = 128
                 /**
+                 * @ignore
                  * @memberof Display
                  * @param {number[]} res - Resolution, defaults to 256x128
                  */
@@ -72,7 +73,7 @@ export default {
                     }
                 }
                 /**
-                 * @memberof display
+                 * @memberof Display
                  * Begin drawing the display
                  */
                 drawDisplay() {
@@ -80,7 +81,7 @@ export default {
                     this._spamDraw()
                 }
                 /**
-                 * @memberof display
+                 * @memberof Display
                  * Begin clearing the display
                  */
                 clearDisplay() {
@@ -91,7 +92,7 @@ export default {
 					}
 				}
                 /**
-                 * @memberof display
+                 * @memberof Display
                  * @returns {boolean} - Whether or not the display renderer is idle
                  */
                 isIdle(){
@@ -101,7 +102,7 @@ export default {
             globalThis.display = new Display()
             api.log('display: dotOS Display loaded!')
 
-            yield* threadLibs.waitUntil(() => !(globalThis.driveMounting))
+            yield* thl.require('drive')
             api.log('display: Processing hex codes...')
             display.colors = yield* loadJSONFile('dotOS/data/colors.json')
             display.colors.hex = display.colors.hex.map(function (v) {

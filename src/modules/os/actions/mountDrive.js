@@ -27,6 +27,7 @@ export default {
 				yield* FS.forceSetFile('dotOS/data', i.name, i.contents)
 			}
 			api.log('Finished loading files!')
+			thl.send('drive')
 			delete globalThis.driveMounting
 		}, 'driveMounting.thread')
 	},

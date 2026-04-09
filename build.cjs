@@ -41,8 +41,8 @@ async function main() {
         requirements: [],
         callbacks: []
     }
-    let modules = await fs.readdir('./src/modules')
-    modules = modules.map((v) => './src/modules/' + v)
+    let modules = await fs.readdir('./src/modules', { recursive: true })
+    modules = modules.map((v) => './src/modules/' + v).filter(v => v.endsWith('.js') || v.endsWith('.mjs'))
     for (let i of modules) {
         console.log(`Now loading ${i}!`)
         let obj = await import(i)
@@ -54,17 +54,17 @@ async function main() {
         let m = obj.onLoad.toString()
         globalThis[chosen].code[name] = m.slice(m.indexOf('{') + 1, m.lastIndexOf('}'))
         globalThis[chosen].requirements[name] = obj.info.requirements
-        for (let [i, j] of Object.entries(obj.callbacks)) {
-            let m = j.toString()
-            globalThis[chosen].callbacks.push({ call: i, val: m.slice(m.indexOf('{') + 1, m.lastIndexOf('}')) })
+        for (let [j, k] of Object.entries(obj.callbacks)) {
+            let m = k.toString()
+            globalThis[chosen].callbacks.push({ call: j, val: m.slice(m.indexOf('{') + 1, m.lastIndexOf('}')) })
         }
     }
     world.funcs = orderArray(world.funcs, world.requirements).map(v => world.code[v])
     code.funcs = orderArray(code.funcs, code.requirements).map(v => code.code[v])
-    let wbuild = world.callbacks.map(function(a){
+    let wbuild = world.callbacks.map(function (a) {
         return `dotOS.callbacks.${a.call}.push(function(){${a.val}})`
     }).join('\n')
-    let cbuild = code.callbacks.map(function(a){
+    let cbuild = code.callbacks.map(function (a) {
         return `dotOS.callbacks.${a.call}.push(function(){${a.val}})`
     }).join('\n')
     const notice = `
@@ -81,16 +81,19 @@ async function main() {
     * Please do not delete this notice, or it will also make me very sad :(
 */
     `
-    let worldContents =  notice + 'dotOS = {}\n' + world.funcs.join('\n') + '\n' + wbuild
+    let worldContents = notice + 'dotOS = {}\n' + world.funcs.join('\n') + '\n' + wbuild
     let codeContents = notice + code.funcs.join('\n') + '\n' + cbuild
     await fs.writeFile('./build/worldcode.cjs', worldContents)
     await fs.writeFile('./build/codeblock.cjs', codeContents)
-
-    let data = await fs.readdir('./src/data/')
+    let data = await fs.readdir('./src/data/', { recursive: true })
     let dataContents = 'toUpload = []\n'
-    for(let i of data){
-        let contents = await fs.readFile('./src/data/' + i, {encoding: 'utf8'})
-        dataContents += `toUpload.push({name: '${i}', contents: ${JSON.stringify(contents)}})\n`
+    for (let i of data) {
+        let contents = await fs.readFile('./src/data/' + i, { encoding: 'utf8' })
+        let obj = {
+            name: i,
+            contents: JSON.stringify(contents)
+        }
+        dataContents += `toUpload.push(${JSON.stringify(obj)})\n`
     }
     await fs.writeFile('./build/files.cjs', dataContents)
     let header = await import('./src/header.js')
