@@ -94,6 +94,9 @@ export default {
 				return this._getFile(this.hash.hashStr(f))
 			}
 			_setFile(file, contents) {
+				if(typeof contents != 'string'){
+					throw new TypeError(`${file} is being set to ${contents?.type || typeof contents}!`)
+				}
 				let descs = contents.match(/[^]{1,450}/g)
 				let chunks = []
 				for (let i = 0; i < descs.length; i += 36) {
@@ -108,9 +111,9 @@ export default {
 						for (let j = 0; j < f.length; j++) {
 							func(file, i + 1, j, f[j], disk)
 						}
-					}, i + 1, chunks[i], i, file, this.setFSlot, this.disk)
+					}, (i >> 4) + 1, chunks[i], i, file, this.setFSlot, this.disk)
 				}
-				return len + 1
+				return (len >> 4) + 1
 			}
 			/**
 			 * Set a file with contents
@@ -130,7 +133,7 @@ export default {
 					this._setFile(dir, JSON.stringify(l))
 				}*/
 				l.push(name)
-				this._setFile(dir, JSON.stringify(l))
+				this.setFile(dir, JSON.stringify(l))
 			}
 			removeFileFromDir(dir, name) {
 				let fullName = dir + '/' + name
@@ -148,8 +151,7 @@ export default {
 			 */
 			newFile(parent, name, contents) {
 				this.addFileToDir(parent, name)
-				let ha = this.hash.hashStr(parent + '/' + name)
-				this._setFile(ha, contents)
+				return this.setFile(parent + '/' + name, contents)
 			}
 			/**
 			 * Delete a file

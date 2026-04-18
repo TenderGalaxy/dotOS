@@ -4,7 +4,7 @@ export default {
         type: 'os',
         version: '1.0.0',
         source: 'github.com/tendergalaxy/dotOS/blob/main/src/modules/display.js',
-        requirements: ['FS-async', 'async', 'data', 'bigArray']
+        requirements: ['FS-async', 'async', 'data', 'jsonLoad']
     },
     onLoad() {
         initDisplay = new Thread(function* () {
@@ -16,14 +16,15 @@ export default {
                 width = 0.05
                 height = 0.05
                 partition = 8
-                row = 128
+                row = 120
+                pos = [0, 1.8, -3.51]
                 /**
                  * @ignore
                  * @memberof Display
                  * @param {number[]} res - Resolution, defaults to 256x128
                  */
                 constructor(res) {
-                    this.res = res || [256, 128]
+                    this.res = res || [256, 120]
                     this.buffer = new Uint8Array(this.res[0] * this.res[1])
                     this.buffer.fill(137)
                     /*this.pixels = new Proxy(this.buffer, {
@@ -31,7 +32,7 @@ export default {
                     })*/
                 }
                 _drawRow(){
-                    const pos = [0,3,0]
+                    const pos = this.pos
                     const part = this.res[0]/this.partition
                     for(let j = 0; j < this.partition; j++){
                         const id = `dotOS_display_row${this.row}_rev${j}`

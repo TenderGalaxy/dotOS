@@ -13,6 +13,8 @@ export default {
 	getStandardChestItemSlot(pos, idx) {
 		return chestInfo[pos[0]]?.[pos[1]]?.[pos[2]]?.[idx] || ''
 	},
+	setClientOption(){},
+	setClientOptions(){},
 	getStandardChestItems(pos) {
 		return chestInfo[pos[0]][pos[1]][pos[2]]
 	},
@@ -33,7 +35,8 @@ export default {
 	getPosition(id) {
 		return position
 	},
-	setPosition(id, pos) {
+	setPosition(id, ...pos) {
+		if(typeof pos == 'object') pos = pos[0]
 		position = pos.slice()
 	},
 	broadcastMessage(val) {

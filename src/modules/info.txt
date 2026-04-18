@@ -1,0 +1,20 @@
+NAMES AND ACTIONS
+    os
+        actions
+            display.js            - display             - Display
+            mountDrive.js         - data                - Prepare the drive and load files
+            userTracker.js        - user                - Track the user
+        libraries
+            async.js              - async               - Thread class
+            CFF.js                - CFF                 - Custom file formats
+            DNU-bigArray.js       - depr                - Large arrays without memory errors
+            FS-async.js           - FS-async            - Async FS Api
+            jsonLoad.js           - jsonLoad            - Load JSON files (Soon to be deprecated)
+            utils.js              - utils               - Utilities (Typescript, Parse, etc.)
+            window.js             - window              - Windows within display
+    worldcode
+        debug.js                  - debug               - Debug console
+        dotError.js               - dotError            - Better Error messages
+        FS.js                     - FS                  - Filesystem
+        moduleLoader.js           - moduleLoader        - Callbacks and modules
+        osTS.js                   - TS                  - Task Scheduler

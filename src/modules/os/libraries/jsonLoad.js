@@ -4,7 +4,7 @@ export default {
 		type: 'os',
 		version: '1.0.0',
 		source: 'github.com/tendergalaxy/dotOS/blob/main/src/modules/jsonLoad.js',
-		requirements: ['FS-async']
+		requirements: ['FS-async', 'utils']
 	},
 	onLoad() {
 		/**
@@ -13,7 +13,7 @@ export default {
 		 */
 		globalThis.loadJSONFile = function* (f) {
 			let v = yield* FS.getFileAsync(f)
-			return JSON.parse(v)
+			return Parse(v)
 		}
 	},
 	callbacks: {

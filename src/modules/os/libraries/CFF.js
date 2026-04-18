@@ -12,7 +12,7 @@ export default {
 			const extension = f.split('.').at(-1)
 			const data = {fName: f, fContents: file}
 			const form = FS.getFileAsync(`src/data/dotOS-ext-${extension}.js`)
-			return (new Function*('data', form))(data)
+			return (yield* (new Function*('data', form))(data))
 		}
 	},
 	callbacks: {

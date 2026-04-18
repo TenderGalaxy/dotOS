@@ -27,6 +27,9 @@ function orderArray(inp, req) {
     } while (arr.length > 0)
     return out
 }
+function str(x){
+    return JSON.stringify(JSON.parse(JSON.stringify(x)))
+}
 async function main() {
     await fs.mkdir('./build', { recursive: true })
     world = {
@@ -42,7 +45,18 @@ async function main() {
         callbacks: []
     }
     let modules = await fs.readdir('./src/modules', { recursive: true })
-    modules = modules.map((v) => './src/modules/' + v).filter(v => v.endsWith('.js') || v.endsWith('.mjs'))
+    modules = modules.map((v) => './src/modules/' + v).filter(v => {
+        if(v.includes('DNU')){
+            return false
+        }
+        if(v.endsWith('.js')){
+            return true
+        }
+        if(v.endsWith('.mjs')){
+            return true
+        }
+        return false
+    })
     for (let i of modules) {
         console.log(`Now loading ${i}!`)
         let obj = await import(i)
@@ -68,7 +82,7 @@ async function main() {
         return `dotOS.callbacks.${a.call}.push(function(){${a.val}})`
     }).join('\n')
     const notice = `
-/*
+/**
     * Notice
     * DotOS - a faux-operating-system for Bloxd
     * by fenll/tendergalaxy (2026)
@@ -91,9 +105,9 @@ async function main() {
         let contents = await fs.readFile('./src/data/' + i, { encoding: 'utf8' })
         let obj = {
             name: i,
-            contents: JSON.stringify(contents)
+            contents: contents
         }
-        dataContents += `toUpload.push(${JSON.stringify(obj)})\n`
+        dataContents += `toUpload.push(${str(obj)})\n`
     }
     await fs.writeFile('./build/files.cjs', dataContents)
     let header = await import('./src/header.js')

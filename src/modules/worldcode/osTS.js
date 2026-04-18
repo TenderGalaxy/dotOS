@@ -16,7 +16,7 @@ export default {
 			work: {},
 			stack: [],
 			prioritizeUnfinishedWork: true,
-			cyclesPerTick: 1,
+			cyclesPerTick: 5,
 			lastUsedTick: 0,
 			tick: 0,
 			makeAction(action, ...args) {
@@ -35,7 +35,7 @@ export default {
 			 * @param  {...any} args - Arguments
 			 */
 			scheduleFirstUnused(action, ...args) {
-				TS.lastUsedTick = Math.max(TS.lastUsedTick, TS.tick) + 1
+				TS.lastUsedTick = Math.trunc(Math.max(TS.lastUsedTick, TS.tick) + 1)
 				TS.work[TS.lastUsedTick] = [TS.makeAction(action, ...args)]
 				return TS.lastUsedTick
 			},
@@ -64,10 +64,11 @@ export default {
 					throw new ValueError('TS.setTimeout recieved a negative delay value.')
 				}
 				TS.lastUsedTick = Math.max(TS.lastUsedTick, TS.tick + delay)
-				if (TS.work?.[TS.tick + delay]) {
-					TS.work[TS.tick + delay].push(TS.makeAction(action, ...args))
+				let v = Math.trunc(TS.tick + delay)
+				if (TS.work?.[v]) {
+					TS.work[v].push(TS.makeAction(action, ...args))
 				} else {
-					TS.work[TS.tick + delay] = [TS.makeAction(action, ...args)]
+					TS.work[v] = [TS.makeAction(action, ...args)]
 				}
 			},
 			cancelSpecific(delay, fname) {
@@ -77,13 +78,14 @@ export default {
 						t.push(i)
 					}
 				}
-				TS.work[TS.tick + delay] = t
+				let v = Math.trunc(TS.tick + delay)
+				TS.work[v] = t
 			}
 		}
 	},
 	callbacks: {
 		tick() {
-			TS.tick++
+			TS.tick = Math.trunc(TS.tick + 1)
 			if (!TS.work?.[TS.tick]) return
 			if (TS.prioritizeUnfinishedWork) {
 				TS.stack = [...TS.stack, ...TS.work[TS.tick]]

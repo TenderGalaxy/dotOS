@@ -12,7 +12,7 @@ export default {
 			 * Load a file, and then get the contents
 			 * @memberof FS
 			 * @param {string} f - File
-			 * @returns - File contents
+			 * @returns {string} - File contents
 			 */
 			*getFileAsync(f) {
 				let t = this.hash.hashStr(f)
@@ -28,19 +28,19 @@ export default {
 			*setFileAsync(f, c) {
 				let t = this.hash.hashStr(f)
 				yield* this._loadFile(t)
-				this._setFile(f, c)
+				yield* thl.sleep(this._setFile(f, c))
 			}
 			/**
 			 * Create a file without needing to load it
 			 * @memberof FS
-			 * @param {*} p - Parent directory
-			 * @param {*} n - File
-			 * @param {*} c - Contents
+			 * @param {string} p - Parent directory
+			 * @param {string} n - File
+			 * @param {string} c - Contents
 			 */
 			*newFileAsync(p, n, c) {
 				yield* this.loadFile(p)
 				yield* this.loadFile(p + '/' + n)
-				this.newFile(p, n, c)
+				yield* thl.sleep(this.newFile(p, n, c))
 			}
 			*_loadFile(f) {
 				while (!this._isFileLoaded(f)) {
@@ -75,9 +75,9 @@ export default {
 				yield* this.loadFile(p)
 				yield* this.loadFile(p + '/' + n)
 				if (this.isFileValid(p + '/' + n)) {
-					this.setFile(p + '/' + n, c)
+					yield* thl.sleep(this.setFile(p + '/' + n, c))
 				} else {
-					this.newFile(p, n, c)
+					yield* thl.sleep(this.newFile(p, n, c))
 				}
 			}
 			/**
@@ -95,7 +95,7 @@ export default {
 				}
 			}
 		}
-		globalThis.FS = new asyncFS(FS.disk)
+		globalThis.FS = new globalThis.asyncFS(FS.disk)
 		//delete globalThis.disk
 	},
 	callbacks: {

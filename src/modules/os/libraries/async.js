@@ -25,13 +25,9 @@ export default {
 				this.idle = false
 				this.name = name || 'thread'
 				this.endValue = 0
-				TS.scheduleFirstUnused(() => (this.tick()))
+				TS.scheduleFirstUnused(th => {th.tick()}, this)
 			}
 			tick() {
-				//api.log(`${this.name}: ${this.idle}`)
-				if (!this.idle) {
-					TS.scheduleFirstUnused(() => (this.tick()))
-				}
 				let value = dotError.tryFunction(() => this.task.next()) || {done: false}
 				if(dotError.hasError()){
 					api.log(`${this.name}: Error!`)
@@ -40,6 +36,8 @@ export default {
 				if(value.done){
 					this.idle = true
 					this.endValue = value.value
+				} else {
+					TS.scheduleFirstUnused(th => {th.tick()}, this)
 				}
 			}
 			/**
@@ -73,7 +71,11 @@ export default {
 		 * @namespace ThreadLibs
 		 */
 		globalThis.thl = {
-			loaded: [],
+			loaded: [], // Loaded Libraries
+			speak: {}, // Speaking channels
+			maxSpeakRecall: 10, // Maximum recall for speaking channels
+
+			// Sleep API
 			/**
 			 * Sleep for a given number of 50-millisecond ticks.
 			 * @memberof ThreadLibs
@@ -107,6 +109,8 @@ export default {
 					yield
 				}
 			},
+
+			// Module API
 			/**
 			 * Wait until a module is loaded
 			 * @memberof ThreadLibs
@@ -124,6 +128,59 @@ export default {
 			 */
 			send(module){
 				thl.loaded.push(module)
+			},
+
+			// Channel API
+	
+			/**
+			 * Create a channel for communications
+			 * @param {number} msp Maximum Speak Recall (Lower saves on memory) (Defaults to thl.maxSpeakRecall)
+			 * @returns {number} Channel number
+			 * @memberof ThreadLibs
+			 */
+			makeChannel(msp=thl.maxSpeakRecall){
+				let v = Math.floor(Math.random() * (1 << 48))
+				thl.speak[v] = {msp: msp, conn: []}
+				return v
+			},
+			/**
+			 * Post a message onto a channel.
+			 * @param {number} chan Channel to communicate on
+			 * @param {any} msg Message to post
+			 * @param {string} author Defaults to 'thread'
+			 * @memberof ThreadLibs
+			 */
+			post(chan, msg, author='Thread'){
+				thl.speak[chan].con.push({author: author, msg: msg})
+				if(thl.speak[chan].length > msp){
+					thl.speak[chan].shift()
+				}
+			},
+			/**
+			 * Get a message from a channel.
+			 * @param {number} chan 
+			 * @returns {array} All current messages
+			 * @memberof ThreadLibs
+			 */
+			getPosts(chan){
+				return thl.speak[chan].con
+			},
+			/**
+			 * Pop a message from a channel.
+			 * @param {number} chan 
+			 * @returns {any} Result
+			 * @memberof ThreadLibs
+			 */
+			popPost(chan){
+				return thl.speak[chan].con.pop()
+			},
+			/**
+			 * Delete a channel
+			 * @param {number} channel 
+			 * @memberof ThreadLibs
+			 */
+			deleteChannel(channel){
+				delete thl.speak[channel]
 			}
 		}
 	},

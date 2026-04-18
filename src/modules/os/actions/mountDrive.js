@@ -8,8 +8,8 @@ export default {
 	},
 	onLoad() {
 		globalThis.driveMounting = { toUpload: toUpload }
-		toUpload = null
-		driveMounting.thread = new Thread(function* () {
+		globalThis.toUpload = null
+		globalThis.driveMounting.thread = new Thread(function* () {
 			let f = FS.hash.hashStr('dotOS')
 			for (let i = 0; i < 3; i++) {
 				api.getBlockId(...f, 0)
@@ -23,9 +23,13 @@ export default {
 			}
 			yield* FS.forceSetFile('dotOS', 'data', '[]')
 			api.log('Drive mounted!')
+			let thr = []
 			for (let i of driveMounting.toUpload) {
-				yield* FS.forceSetFile('dotOS/data', i.name, i.contents)
+				thr.push(new Thread(function*(){ // Accelerate by making multiple processes
+					yield* FS.forceSetFile('dotOS/data', i.name, i.contents)
+				}))
 			}
+			yield* thl.waitUntil(() => thr.every(i => i.isIdle()))
 			api.log('Finished loading files!')
 			thl.send('drive')
 			delete globalThis.driveMounting

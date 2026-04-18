@@ -20,12 +20,11 @@ node build.cjs || {
 # Compress and add comments
 world="build/worldcode_compressed.cjs"
 code="build/codeblock_compressed.cjs"
-terser build/worldcode.cjs --compress --mangle --output "$world" --comments "/Notice/" || {
+terser build/worldcode.cjs --compress --mangle --output "$world" --comments "/\*/"  || {
   npm install terser -g
-  terser build/worldcode.cjs --compress --mangle --output "$world" --comments "/Notice/" 
+  terser build/worldcode.cjs --compress --mangle --output "$world" --comments "/\*/" 
 }
-terser build/codeblock.cjs --compress --mangle --output "$code" --comments "/Notice/" 
-terser build/files.cjs --compress --mangle --output build/files_compressed.cjs
+terser build/codeblock.cjs --compress --mangle --output "$code" --comments "/\*/" 
 
 wlen=$(wc -c < "$world")
 clen=$(wc -c < "$code")
