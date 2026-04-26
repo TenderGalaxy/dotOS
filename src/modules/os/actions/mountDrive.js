@@ -21,11 +21,11 @@ export default {
 				api.log('Drive not found, making new drive.')
 				FS._setFile(f, '[]')
 			}
-			yield* FS.forceSetFile('dotOS', 'data', '[]')
+			yield* FS.newFileAsync('dotOS', 'data', '[]')
 			api.log('Drive mounted!')
 			for(let i of driveMounting.toUpload){
 				console.log(`Setting ${i.dir}/${i.name}`)
-				yield* FS.forceSetFile(i.dir, i.name, i.contents)
+				yield* FS.newFileAsync(i.dir, i.name, i.contents)
 			}
 			api.log('Finished loading files!')
 			thl.send('drive')

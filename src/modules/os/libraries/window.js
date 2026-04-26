@@ -7,6 +7,9 @@ export default {
         requirements: ['display']
     },
     onLoad(){
+        /**
+         * @class
+         */
         globalThis.Win = class {
             constructor(dim, pos){
                 this.dim = dim
@@ -31,10 +34,13 @@ export default {
                     this.im[this.ltoi(i, this.dim[0] - 1)] = color
                 }
             }
-            render(){
+            *render(){
                 for(let i = 0; i < this.dim[1]; i++){
                     for(let j = 0; j < this.dim[0]; j++){
                         display.buffer[(this.pos[1] + i) * display.res[0] + this.pos[0] + j] = this.im[this.dim[0] * i + j]
+                    }
+                    if(i % 10 === 0){
+                        yield
                     }
                 }
             }
@@ -55,13 +61,17 @@ export default {
              * @param {{colors?:Number[],kerning?:true,wraptoleft?:false}} - Style
              * @returns {void}
              */
-            drawString(pos, str, { colors = [137, 0], kerning = true, wraptoleft = false } = {}){
+            drawString(pos, str, { colors = [137, 0], wrap = true, wraptoleft = false } = {}){
                 let npos = pos.slice()
                 for(let i = 0; i < str.length; i++){
                     npos[0] += 4
-                    if(kerning && pos[0] > this.dim[0] - 3){
-                        npos[0] = wraptoleft ? this.dim[0] + 2 : pos[0]
-                        npos[1] += 6
+                    if(npos[0] > this.dim[0] - 3){
+                        if(wrap){
+                            npos[0] = wraptoleft ? (this.dim[0] + 2) : pos[0]
+                            npos[1] += 6
+                        } else {
+                            return
+                        }
                     }
                     if(npos[1] > this.dim[1] - 5){
                         return

@@ -23,11 +23,7 @@ export default {
             }
             return v
         }
-        if (isBloxd()) {
-            /**
-             * @ignore
-             * Typescript Plugin
-             */
+        /*if (isBloxd()) {
             function scopify(t, name = 'globalThis') {
                 let values = {}
                 for (let i of Object.keys(t)) {
@@ -122,7 +118,7 @@ export default {
                 }
             }
             scopify(globalThis)
-        }
+        }*/
     },
     callbacks: {}
 }
