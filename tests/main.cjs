@@ -9,8 +9,8 @@ async function main() {
 	myId = '-1'
 	require('../build/files.cjs')
 	require('../build/codeblock.cjs')
-	const interval = setInterval(() => { tick() }, 50)
-	require('../testscript.cjs')
+	const interval = setInterval(() => { tick() }, 10)
+	require('./testscript.cjs')
 	/*setInterval(function(){
 		api.log(Object.keys(TS.work))
 	}, 50)*/

@@ -2,6 +2,9 @@ let facingInfo = { dir: [0, 1, 0] }
 let position = [0, 0, 0]
 let chestInfo = {}
 let loaded = {}
+let screen = Array.from({length: 120}, i => Array(256))
+import chalk from 'chalk'
+import convert from 'color-convert'
 export default {
 	// api.setStandardChestItemSlot([...f, chapter], idx, 'Net', 1, undefined, { customDescription: n })
 	setStandardChestItemSlot(pos, idx, A, B, C, val) {
@@ -13,9 +16,16 @@ export default {
 	getStandardChestItemSlot(pos, idx) {
 		return chestInfo[pos[0]]?.[pos[1]]?.[pos[2]]?.[idx] || ''
 	},
-	setDirectionArrow(){
-		console.log(arguments)
+	setDirectionArrow(pid, id, pos, val){
+		pos = [Math.round(pos[0]/1.6)+4, Math.round((pos[1] - 1.85)*20)]
+		screen[119 - pos[1]].splice(32 * pos[0], 32, ...val)
 	},
+	terminalDrawScreen(){
+		screen.forEach(i => console.log(i.map(j => 
+			chalk.hex(`#${convert.keyword.hex(j.style.color.toLowerCase())}`)(j.str)
+		).join('')))
+	},
+	clearDirectionArrow(){},
 	setClientOption(){},
 	setClientOptions(){},
 	getStandardChestItems(pos) {
@@ -39,7 +49,7 @@ export default {
 		return position
 	},
 	setPosition(id, ...pos) {
-		if(typeof pos == 'object') pos = pos[0]
+		if(typeof pos[0] == 'object') pos = pos[0]
 		position = pos.slice()
 	},
 	broadcastMessage(val) {

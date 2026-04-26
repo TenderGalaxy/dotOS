@@ -21,7 +21,7 @@ export default {
                 /**
                  * @ignore
                  * @memberof Display
-                 * @param {number[]} res - Resolution, defaults to 256x128
+                 * @param {number[]} res - Resolution, defaults to 256x120
                  */
                 constructor(res) {
                     this.res = res || [256, 120]
