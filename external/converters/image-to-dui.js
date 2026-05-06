@@ -153,6 +153,33 @@ const hexes = [
     let c = v[5] + v[6]
     return [parseInt(a, 16), parseInt(b, 16), parseInt(c, 16)]
 })
+function floydSteinberg(arr){
+    const width = arr[0].length
+    const height = arr.length
+    for(let i = 0; i < height - 1; i++){
+        for(let j = 1; j < width - 1; j++){
+            let t = findClosestCode(arr[i][j])
+            arr[i][j] = t[2]
+           
+            arr[i]  [j+1][0] += t[1][0] * 7/16
+            arr[i+1][j+1][0] += t[1][0] * 1/16
+            arr[i+1][j]  [0] += t[1][0] * 5/16
+            arr[i+1][j-1][0] += t[1][0] * 3/16
+            arr[i]  [j+1][1] += t[1][1] * 7/16
+            arr[i+1][j+1][1] += t[1][1] * 1/16
+            arr[i+1][j]  [1] += t[1][1] * 5/16
+            arr[i+1][j-1][1] += t[1][1] * 3/16
+            arr[i]  [j+1][2] += t[1][2] * 7/16
+            arr[i+1][j+1][2] += t[1][2] * 1/16
+            arr[i+1][j]  [2] += t[1][2] * 5/16
+            arr[i+1][j-1][2] += t[1][2] * 3/16
+        }
+        arr[i][0] = findClosestCode(arr[i][0])[2]
+        arr[i][width-1] = findClosestCode(arr[i][width-1])[2]
+    }
+    arr[width - 1] = arr[width - 1].map(i => findClosestCode(i)[2])
+    return arr
+}
 function findClosestCode(hex){
     if(typeof hex == 'string'){
         if(hex.startsWith('#')){
@@ -172,37 +199,18 @@ function findClosestCode(hex){
 const inputFiles = await readdir('./in')
 for(let input of inputFiles){
     const width = 100, height = 100
-    const image = sharp(`./in/${input}`).resize(width + 2, height + 1)
+    const image = sharp(`./in/${input}`).resize(width, height)
     const {data} =await image.raw().toBuffer({resolveWithObject: true})
-    let grid = Array.from({length: height+1}, i => Array.from({length: width+2}, v => [undefined, undefined, undefined]))
-    for(let i = 0; i < height + 1; i++){
-        for(let j = 0; j < width + 2; j++){
-            grid[i][j][0] = data[(i * (width+2) + j)*3]
-            grid[i][j][1] = data[(i * (width+2) + j)*3 + 1]
-            grid[i][j][2] = data[(i * (width+2) + j)*3 + 2]
-        }
-    }
+    let grid = Array.from({length: height}, i => Array.from({length: width}, v => [undefined, undefined, undefined]))
     for(let i = 0; i < height; i++){
-        for(let j = 1; j < width + 1; j++){
-            let t = findClosestCode(grid[i][j])
-            grid[i][j] = t[2]
-           
-            grid[i]  [j+1][0] += t[1][0] * 7/16
-            grid[i+1][j+1][0] += t[1][0] * 1/16
-            grid[i+1][j]  [0] += t[1][0] * 5/16
-            grid[i+1][j-1][0] += t[1][0] * 3/16
-            grid[i]  [j+1][1] += t[1][1] * 7/16
-            grid[i+1][j+1][1] += t[1][1] * 1/16
-            grid[i+1][j]  [1] += t[1][1] * 5/16
-            grid[i+1][j-1][1] += t[1][1] * 3/16
-            grid[i]  [j+1][2] += t[1][2] * 7/16
-            grid[i+1][j+1][2] += t[1][2] * 1/16
-            grid[i+1][j]  [2] += t[1][2] * 5/16
-            grid[i+1][j-1][2] += t[1][2] * 3/16
-            
+        for(let j = 0; j < width; j++){
+            grid[i][j][0] = data[(i * width + j)*3]
+            grid[i][j][1] = data[(i * width + j)*3 + 1]
+            grid[i][j][2] = data[(i * width + j)*3 + 2]
         }
     }
-    grid = grid.map(i => i.slice(1, -1)).slice(0, -1)
+    grid = floydSteinberg(grid)
+
     let gridExport = Uint8Array.from(grid.map(i => i.map(v => hexes[v])).flat(2))
    sharp(gridExport, {
         raw: {
@@ -213,13 +221,5 @@ for(let input of inputFiles){
     }).png().toFile(`out/${input.slice(0, input.lastIndexOf('.'))}preview.png`)
     grid = grid.map(i => i.map(v => String.fromCodePoint(v + 70)).join('')).join('')
     grid = String.fromCodePoint(width + 70) + String.fromCodePoint(height + 70) + grid
-    /*let compressed = []
-    let val = grid[0], run = 0
-    for(let i = 1; i < grid.length;){
-        run = 0
-        while(grid[i] == val && run < 1000) i++, run++
-        val = grid[i]
-        if(val) compressed.push(String.fromCodePoint(run + 70), val)
-    }*/
     await writeFile(`./out/${input.slice(0, input.lastIndexOf('.'))}.dui`, grid)
 }
