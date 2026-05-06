@@ -164,7 +164,7 @@ function findClosestCode(hex){
     for(let i = 0; i < hexes.length; i++){
         let diff = Math.abs(hexes[i][0] - hex[0]) + Math.abs(hexes[i][1] - hex[1]) + Math.abs(hexes[i][2] - hex[2])
         if(diff < min[0]){
-            min = [diff, [hexes[i][0] - hex[0], hexes[i][1] - hex[1], hexes[i][2] - hex[2]], i]
+            min = [diff, [hex[0] - hexes[i][0], hex[1] - hexes[i][1], hex[2] - hexes[i][2]], i]
         }
     }
     return min
@@ -172,29 +172,45 @@ function findClosestCode(hex){
 const inputFiles = await readdir('./in')
 for(let input of inputFiles){
     const width = 100, height = 100
-    const image = sharp(`./in/${input}`).resize(width + 1, height + 1)
+    const image = sharp(`./in/${input}`).resize(width + 2, height + 1)
     const {data} =await image.raw().toBuffer({resolveWithObject: true})
-    let grid = Array.from({length: height+1}, i => Array.from({length: width+1}, v => [undefined, undefined, undefined]))
+    let grid = Array.from({length: height+1}, i => Array.from({length: width+2}, v => [undefined, undefined, undefined]))
     for(let i = 0; i < height + 1; i++){
-        for(let j = 0; j < width + 1; j++){
-            grid[i][j][0] = data[(i * (width+1) + j)*3]
-            grid[i][j][1] = data[(i * (width+1) + j)*3 + 1]
-            grid[i][j][2] = data[(i * (width+1) + j)*3 + 2]
+        for(let j = 0; j < width + 2; j++){
+            grid[i][j][0] = data[(i * (width+2) + j)*3]
+            grid[i][j][1] = data[(i * (width+2) + j)*3 + 1]
+            grid[i][j][2] = data[(i * (width+2) + j)*3 + 2]
         }
     }
     for(let i = 0; i < height; i++){
-        for(let j = 0; j < width; j++){
+        for(let j = 1; j < width + 1; j++){
             let t = findClosestCode(grid[i][j])
             grid[i][j] = t[2]
-            grid[i+1][j][0] += t[1][0]/2
-            grid[i][j+1][0] += t[1][0]/2
-            grid[i+1][j][1] += t[1][1]/2
-            grid[i][j+1][1] += t[1][1]/2
-            grid[i+1][j][2] += t[1][2]/2
-            grid[i][j+1][2] += t[1][2]/2
+           
+            grid[i]  [j+1][0] += t[1][0] * 7/16
+            grid[i+1][j+1][0] += t[1][0] * 1/16
+            grid[i+1][j]  [0] += t[1][0] * 5/16
+            grid[i+1][j-1][0] += t[1][0] * 3/16
+            grid[i]  [j+1][1] += t[1][1] * 7/16
+            grid[i+1][j+1][1] += t[1][1] * 1/16
+            grid[i+1][j]  [1] += t[1][1] * 5/16
+            grid[i+1][j-1][1] += t[1][1] * 3/16
+            grid[i]  [j+1][2] += t[1][2] * 7/16
+            grid[i+1][j+1][2] += t[1][2] * 1/16
+            grid[i+1][j]  [2] += t[1][2] * 5/16
+            grid[i+1][j-1][2] += t[1][2] * 3/16
+            
         }
     }
-    grid = grid.map(i => i.slice(0, -1)).slice(0, -1)
+    grid = grid.map(i => i.slice(1, -1)).slice(0, -1)
+    let gridExport = Uint8Array.from(grid.map(i => i.map(v => hexes[v])).flat(2))
+   sharp(gridExport, {
+        raw: {
+            width: width,
+            height: height,
+            channels: 3
+        }
+    }).png().toFile(`out/${input.slice(0, input.lastIndexOf('.'))}preview.png`)
     grid = grid.map(i => i.map(v => String.fromCodePoint(v + 70)).join('')).join('')
     grid = String.fromCodePoint(width + 70) + String.fromCodePoint(height + 70) + grid
     /*let compressed = []
