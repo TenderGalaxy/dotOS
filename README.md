@@ -1,5 +1,5 @@
 # dotOS
-A multithreaded modularized Operating System that simplifies codeloading, FS, and data uploading and downloading.
+A multithreaded modularized Operating System for Bloxd.io that simplifies codeloading, FS, and data uploading and downloading.
 
 
 ## Building the OS
